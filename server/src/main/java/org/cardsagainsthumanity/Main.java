@@ -1,4 +1,4 @@
-package org.example;
+package org.cardsagainsthumanity;
 
 public class Main {
     public static void main(String[] args) {
