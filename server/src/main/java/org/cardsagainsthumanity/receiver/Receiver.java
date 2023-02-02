@@ -1,5 +1,6 @@
 package org.cardsagainsthumanity.receiver;
 
+import org.cardsagainsthumanity.EchoThread;
 import org.cardsagainsthumanity.Game;
 
 import java.io.BufferedReader;
@@ -15,37 +16,16 @@ public class Receiver {
 
     public Receiver() throws IOException {
         // Listen on port 8761
-        ServerSocket serverSocket = new ServerSocket(8761);
-        Socket socket = serverSocket.accept();
+        ServerSocket serverSocket = null;
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        serverSocket = new ServerSocket(8761);
 
-        Game game = new Game();
-
-        String response;
 
         while (true) {
-            String message = "";
+            Socket socket = null;
+            socket = serverSocket.accept();
 
-            try {
-                message = in.readLine();
-                game.execute(message);
-                response = game.response;
-
-                if (response.equals("exit_code")) {
-                    break;
-                }
-
-                response += "\n";
-
-                socket.getOutputStream().write(response.getBytes());
-
-                System.out.println(response);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            new EchoThread(socket).start();
         }
-
-
     }
 }
