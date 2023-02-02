@@ -1,6 +1,6 @@
 # Project
 
-Tim, Sandy, Matthias, (Linus)
+Tim, Sandy, Matthias, Morten, Linus
 
 ## Thema: Cards against Humanity
 
