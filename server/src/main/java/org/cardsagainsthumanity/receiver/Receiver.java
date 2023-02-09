@@ -1,11 +1,9 @@
 package org.cardsagainsthumanity.receiver;
 
 import org.cardsagainsthumanity.EchoThread;
-import org.cardsagainsthumanity.Game;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,7 +16,9 @@ public class Receiver {
         // Listen on port 8761
         ServerSocket serverSocket = null;
 
-        serverSocket = new ServerSocket(8761);
+        InetAddress addr = InetAddress.getByName("172.20.10.3");
+
+        serverSocket = new ServerSocket(8761, 50, addr);
 
 
         while (true) {

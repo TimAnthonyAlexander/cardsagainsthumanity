@@ -35,8 +35,11 @@ public class Game {
             case "exit":
                 response = "exit_code";
                 break;
+            case "kick":
+                response = "Kicking " + data;
+                break;
             default:
-                response = "Invalid command";
+                response = "Invalid command: " + command;
                 break;
         }
 

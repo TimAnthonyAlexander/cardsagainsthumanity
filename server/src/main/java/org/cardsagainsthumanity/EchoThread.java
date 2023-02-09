@@ -24,6 +24,8 @@ public class EchoThread extends Thread {
 
         String response;
 
+        System.out.println("Client connected on " + socket.getInetAddress().getHostAddress());
+
         while (true) {
             String message = "";
 
@@ -33,17 +35,21 @@ public class EchoThread extends Thread {
                 response = game.response;
 
                 if (response.equals("exit_code")) {
+                    System.out.println("Client disconnected on " + socket.getInetAddress().getHostAddress());
                     socket.close();
                     return;
                 }
-
-                response += "\n";
 
                 out.writeBytes(response);
 
                 System.out.println(response);
             } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                return;
             }
         }
 
