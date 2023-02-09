@@ -40,6 +40,8 @@ public class EchoThread extends Thread {
                     return;
                 }
 
+                response += "\r";
+
                 out.writeBytes(response);
 
                 System.out.println(response);
