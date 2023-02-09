@@ -16,10 +16,12 @@ public class Receiver {
         // Listen on port 8761
         ServerSocket serverSocket = null;
 
-        InetAddress addr = InetAddress.getByName("172.20.10.3");
+        // Automatically grab the ip of the user (not the loopback address)
+        InetAddress addr = InetAddress.getLocalHost();
 
         serverSocket = new ServerSocket(8761, 50, addr);
 
+        System.out.println("Server started on " + addr.getHostAddress() + " on port 8761");
 
         while (true) {
             Socket socket = null;
