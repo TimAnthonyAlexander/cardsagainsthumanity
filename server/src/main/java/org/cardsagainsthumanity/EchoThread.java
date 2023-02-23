@@ -1,13 +1,17 @@
 package org.cardsagainsthumanity;
 
+import org.cardsagainsthumanity.game.Logic;
+
 import java.io.*;
 import java.net.Socket;
 
 public class EchoThread extends Thread {
     protected Socket socket;
+    public Logic logic;
 
-    public EchoThread(Socket clientSocket) {
+    public EchoThread(Socket clientSocket, Logic logic) {
         this.socket = clientSocket;
+        this.logic = logic;
     }
 
     public void run() {
@@ -21,6 +25,7 @@ public class EchoThread extends Thread {
         }
 
         Game game = new Game();
+        game.logic = this.logic;
 
         String response;
 
@@ -40,7 +45,7 @@ public class EchoThread extends Thread {
                     return;
                 }
 
-                response += "\r";
+                response += "\r\n";
 
                 out.writeBytes(response);
 

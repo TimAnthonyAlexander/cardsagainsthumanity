@@ -1,7 +1,7 @@
 package org.cardsagainsthumanity.receiver;
 
 import org.cardsagainsthumanity.EchoThread;
-
+import org.cardsagainsthumanity.game.Logic;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -23,11 +23,13 @@ public class Receiver {
 
         System.out.println("Server started on " + addr.getHostAddress() + " on port 8761");
 
+        Logic logic = new Logic();
+
         while (true) {
             Socket socket = null;
             socket = serverSocket.accept();
 
-            new EchoThread(socket).start();
+            new EchoThread(socket, logic).start();
         }
     }
 }
