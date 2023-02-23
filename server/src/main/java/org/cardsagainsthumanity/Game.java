@@ -48,7 +48,7 @@ public class Game {
                 response = "Kicking " + data[1];
                 break;
             case "update":
-                response = logic.getUpdate();
+                response = logic.getUpdate(data[1]);
                 break;
             default:
                 response = "Invalid command: " + command;
