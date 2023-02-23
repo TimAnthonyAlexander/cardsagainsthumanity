@@ -61,6 +61,7 @@ public class Logic {
                 break;
             }
         }
+        System.out.println("Player " + playerName + " joined the game");
     }
 
     public Player getPlayer(String name) {
@@ -80,15 +81,26 @@ public class Logic {
         int round = this.round;
         int score = player.score;
         JSONObject json = new JSONObject();
-        json.put("blackCard", blackCard);
+        json.put("blackCard", blackCard.content);
         json.put("round", round);
         json.put("score", score);
+        String[] playerNames = new String[100];
+        String[] whiteCards = new String[10];
         for (int i = 0; i < players.length; i++) {
             if (players[i] != null && players[i].name.equals(playerName)) {
-                json.put("whiteCards", players[i].whitecards);
+                for (int j = 0; j < players[i].whitecards.length; j++) {
+                    whiteCards[j] = players[i].whitecards[j].content;
+                }
                 break;
             }
         }
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null) {
+                playerNames[i] = players[i].name;
+            }
+        }
+        json.put("playerNames", playerNames);
+        json.put("whiteCards", whiteCards);
         return json.toString();
     }
 

@@ -49,7 +49,9 @@ public class EchoThread extends Thread {
 
                 out.writeBytes(response);
 
-                System.out.println(response);
+                if (false) {
+                    System.out.println(response);
+                }
             } catch (IOException e) {
                 try {
                     socket.close();
