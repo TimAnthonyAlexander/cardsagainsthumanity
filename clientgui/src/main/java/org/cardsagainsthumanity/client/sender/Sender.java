@@ -18,6 +18,10 @@ public class Sender {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
+    public Socket getClientSocket(){
+        return clientSocket;
+    }
+
     public String sendMessage(String msg){
         try{
             out.println(msg);
