@@ -6,8 +6,10 @@ import java.awt.*;
 public class WhiteCard extends JButton {
 
     private String text;
-    public WhiteCard(String content){
+    private int index;
+    public WhiteCard(String content, int index){
         this.text = content;
+        this.index = index;
         this.setBackground(Color.WHITE);
     }
 
@@ -21,6 +23,10 @@ public class WhiteCard extends JButton {
         }else{
             this.setText("");
         }
+    }
+
+    public int getIndex(){
+        return this.index;
     }
 
     public void setPassedText(String text) {

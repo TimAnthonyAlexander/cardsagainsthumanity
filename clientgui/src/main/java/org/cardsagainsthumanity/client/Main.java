@@ -9,7 +9,7 @@ public class Main {
             s.sendMessage("stop");
             s.sendMessage("exit");
             s.closeConnection();*/
-            new Runner("10.62.163.63","Peter");
+            new Runner();
         }catch(Exception e){
             e.printStackTrace();
         }
