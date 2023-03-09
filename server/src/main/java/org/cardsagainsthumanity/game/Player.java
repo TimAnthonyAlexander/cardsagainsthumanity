@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,12 +25,14 @@ public class Player {
         }
     }
 
-    public boolean isHost() {
-        String hostIp = InetAddress.getLoopbackAddress().getHostAddress();
+    public boolean isHost() throws UnknownHostException {
+        String hostIp = InetAddress.getLocalHost().getHostAddress();
+        System.out.println("Host IP: " + hostIp);
+        System.out.println("Player IP: " + ip);
         return ip.equals(hostIp);
     }
 
-    public String getRole() {
+    public String getRole() throws UnknownHostException {
         return isHost() ? "host" : "player";
     }
 
