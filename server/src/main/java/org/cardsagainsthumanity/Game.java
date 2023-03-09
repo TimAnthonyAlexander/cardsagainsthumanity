@@ -48,9 +48,10 @@ public class Game {
                 break;
             case "kick":
                 response = "Kicking " + data[1];
+                logic.kickPlayer(data[1]);
                 break;
             case "update":
-                response = logic.getUpdate(data[1]);
+                response = logic.getUpdate();
                 break;
             case "putCards":
                 response = "Putting card";
