@@ -3,6 +3,7 @@ package org.cardsagainsthumanity.game;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ public class Player {
     public int score;
     public WhiteCard[] whitecards;
     public boolean isCzar = false;
+    public String ip = "";
 
     public Player(String name) {
         this.name = name;
@@ -20,6 +22,15 @@ public class Player {
         for (int i = 0; i < whitecards.length; i++) {
             whitecards[i] = this.whiteCard();
         }
+    }
+
+    public boolean isHost() {
+        String hostIp = InetAddress.getLoopbackAddress().getHostAddress();
+        return ip.equals(hostIp);
+    }
+
+    public String getRole() {
+        return isHost() ? "host" : "player";
     }
 
     private WhiteCard whiteCard() {

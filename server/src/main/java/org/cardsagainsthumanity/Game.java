@@ -6,7 +6,7 @@ public class Game {
     public String response;
     public Logic logic;
 
-    public void execute(String message) {
+    public void execute(String message, String ip) {
         // Split the message into command and data
 
         String command;
@@ -21,11 +21,13 @@ public class Game {
             command = split[0];
         }
 
-        this.response = this.runCommand(command, split);
+        this.response = this.runCommand(command, split, ip);
     }
 
-    private String runCommand(String command, String[] data) {
+    private String runCommand(String command, String[] data, String ip) {
         String response;
+
+        // Ip of the connecting client
 
         switch (command) {
             case "start":
@@ -38,7 +40,7 @@ public class Game {
                 break;
             case "join":
                 response = "Joining as " + data[1];
-                logic.joinGame(data[1]);
+                logic.joinGame(data[1], ip);
                 break;
             case "exit":
                 response = "exit_code";
