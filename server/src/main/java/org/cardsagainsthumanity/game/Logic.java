@@ -11,8 +11,10 @@ import java.util.List;
 
 public class Logic {
     public Player[] players;
-    public BlackCard blackCard;
-    public Integer round;
+    public BlackCard blackCard = this.blackCard();
+    public Integer round = 0;
+    public WhiteCard[] putCards = new WhiteCard[100];
+    public int updatePull = 0;
 
     public Logic() {
         players = new Player[100];
@@ -74,6 +76,7 @@ public class Logic {
     }
 
     public String getUpdate(String playerName) {
+        updatePull++;
         // Return a json object containing the blackcard, and all whitecards of the
         // player that is requesting the update
         BlackCard blackCard = this.blackCard;
@@ -82,10 +85,12 @@ public class Logic {
         int score = player.score;
         JSONObject json = new JSONObject();
         json.put("blackCard", blackCard.content);
+        json.put("isCzar", player.isCzar);
         json.put("round", round);
         json.put("score", score);
         String[] playerNames = new String[100];
         String[] whiteCards = new String[10];
+        String[] putCards = new String[100];
         for (int i = 0; i < players.length; i++) {
             if (players[i] != null && players[i].name.equals(playerName)) {
                 for (int j = 0; j < players[i].whitecards.length; j++) {
@@ -94,18 +99,42 @@ public class Logic {
                 break;
             }
         }
+        for (int i = 0; i < this.putCards.length; i++) {
+            if (this.putCards[i] != null) {
+                putCards[i] = this.putCards[i].content;
+            }
+        }
         for (int i = 0; i < players.length; i++) {
             if (players[i] != null) {
                 playerNames[i] = players[i].name;
             }
         }
+        json.put("putCards", putCards);
         json.put("playerNames", playerNames);
         json.put("whiteCards", whiteCards);
+
+        if (updatePull % 100 == 0) {
+            System.out.println("Update pulled: " + updatePull);
+            updatePull = 0;
+        }
+
         return json.toString();
     }
 
+    public void putCard(String player, int card) {
+        Player p = getPlayer(player);
+        if (p != null) {
+            for (int i = 0; i < putCards.length; i++) {
+                if (putCards[i] == null && p.whitecards[card] != null) {
+                    putCards[i] = p.whitecards[card];
+                    p.whitecards[card] = null;
+                    break;
+                }
+            }
+        }
+    }
+
     private BlackCard blackCard() {
-        // The black cards are in ../../../../../../../black.csv and it is a single
         // column called text, take a random row
         // from the file and return it as a BlackCard object.
         String csv = "black.csv";

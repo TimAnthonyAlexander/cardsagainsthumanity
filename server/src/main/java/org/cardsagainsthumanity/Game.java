@@ -50,6 +50,10 @@ public class Game {
             case "update":
                 response = logic.getUpdate(data[1]);
                 break;
+            case "putCards":
+                response = "Putting card";
+                logic.putCard(data[1], Integer.parseInt(data[2]));
+                break;
             default:
                 response = "Invalid command: " + command;
                 break;

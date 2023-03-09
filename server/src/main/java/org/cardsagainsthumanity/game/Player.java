@@ -11,6 +11,7 @@ public class Player {
     public String name;
     public int score;
     public WhiteCard[] whitecards;
+    public boolean isCzar = false;
 
     public Player(String name) {
         this.name = name;

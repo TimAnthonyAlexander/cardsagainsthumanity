@@ -25,11 +25,18 @@ public class Receiver {
 
         Logic logic = new Logic();
 
+        int requests = 0;
+
         while (true) {
             Socket socket = null;
             socket = serverSocket.accept();
+            requests++;
 
             new EchoThread(socket, logic).start();
+
+            if (requests % 100 == 0) {
+                System.out.println("Requests: " + requests);
+            }
         }
     }
 }
