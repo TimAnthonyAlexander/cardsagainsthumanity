@@ -61,7 +61,7 @@ public class Game {
                 break;
             case "putCards":
                 response = "Putting card";
-                logic.putCard(data[1], Integer.parseInt(data[2]));
+                logic.putCard(ip, Integer.parseInt(data[1]));
                 break;
             default:
                 response = "Invalid command: " + command;

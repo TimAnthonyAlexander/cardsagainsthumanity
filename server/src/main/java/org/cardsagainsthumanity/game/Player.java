@@ -1,13 +1,12 @@
 package org.cardsagainsthumanity.game;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Player {
     public String name;
@@ -27,8 +26,6 @@ public class Player {
 
     public boolean isHost() throws UnknownHostException {
         String hostIp = InetAddress.getLocalHost().getHostAddress();
-        System.out.println("Host IP: " + hostIp);
-        System.out.println("Player IP: " + ip);
         return ip.equals(hostIp);
     }
 
@@ -37,22 +34,30 @@ public class Player {
     }
 
     private WhiteCard whiteCard() {
-        String csv = "white.csv";
-        String text;
-        // Read the file and get a random line
-        List<List<String>> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(csv))) {
+        InputStream is = Logic.class.getClassLoader().getResourceAsStream("white.csv");
+        assert is != null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        ArrayList<String> lines = new ArrayList<String>();
+        try {
             String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split("\n");
-                records.add(Arrays.asList(values));
+            while ((line = br.readLine()) != null)
+            {
+                lines.add(line);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        int random = (int) (Math.random() * records.size());
-        text = records.get(random).get(0);
-        return new WhiteCard(text);
+        // Now return a random line from the file
+        Random rand = new Random();
+        int randomNum = rand.nextInt(lines.size());
+        String line = lines.get(randomNum);
+        return new WhiteCard(line);
     }
 }

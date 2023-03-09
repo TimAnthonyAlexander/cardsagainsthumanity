@@ -3,11 +3,14 @@ package org.cardsagainsthumanity.game;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.json.JSONObject;
+import java.io.InputStreamReader;
+import java.util.Random;
 
 /**
  * 
@@ -25,7 +28,7 @@ public class Logic {
     }
 
     /**
-     * 
+     *
      */
     public void startGame() {
         round = 1;
@@ -123,13 +126,20 @@ public class Logic {
         return json.toString();
     }
 
-    public void putCard(final String player, final int card) {
-        final Player p = getPlayer(player);
-        if (p != null) {
+    public void putCard(final String ip, final int card) {
+        Player player = null;
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null && players[i].ip.equals(ip)) {
+                player = players[i];
+                break;
+            }
+        }
+
+        if (player != null) {
             for (int i = 0; i < putCards.length; i++) {
-                if (putCards[i] == null && p.whitecards[card] != null) {
-                    putCards[i] = p.whitecards[card];
-                    p.whitecards[card] = null;
+                if (putCards[i] == null && player.whitecards[card] != null) {
+                    putCards[i] = player.whitecards[card];
+                    player.whitecards[card] = null;
                     break;
                 }
             }
@@ -162,22 +172,30 @@ public class Logic {
     private BlackCard blackCard() {
         // column called text, take a random row
         // from the file and return it as a BlackCard object.
-        final String csv = "black.csv";
-        String text;
-        // Read the file and get a random line
-        final List<List<String>> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(csv))) {
+        InputStream is = Logic.class.getClassLoader().getResourceAsStream("black.csv");
+        assert is != null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        ArrayList<String> lines = new ArrayList<String>();
+        try {
             String line;
-            while ((line = br.readLine()) != null) {
-                final String[] values = line.split("\n");
-                records.add(Arrays.asList(values));
+            while ((line = br.readLine()) != null)
+            {
+                lines.add(line);
             }
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        final int random = (int) (Math.random() * records.size());
-        text = records.get(random).get(0);
-        return new BlackCard(text);
+        // Now return a random line from the file
+        Random rand = new Random();
+        int randomNum = rand.nextInt(lines.size());
+        String line = lines.get(randomNum);
+        return new BlackCard(line);
     }
 }
