@@ -13,20 +13,23 @@ public class Runner {
     private int round;
     private boolean connected;
 
+    private WhiteCard[] pcarr;
+
 
     private WhiteCard[] wcarr;
 
     private BlackCard bc;
 
     private String gamestate;
-    private boolean tzar;
+    private boolean czar;
 
     public Runner() throws IOException, InterruptedException {
         GUI gui = new GUI(this);
         name = "";
         conn = "";
         connected = false;
-        tzar = false;
+        round = 0;
+        czar = false;
 
         while(!connected){
             while(name == "" && conn == ""){
@@ -51,14 +54,21 @@ public class Runner {
         while(run){
             update();
             JSONDecoder();
-            Thread.sleep(1000);
+            Thread.sleep(16);
         }
     }
     public void update(){
-        gamestate = sender.sendMessage("update "+ name);
-        if (gamestate == null){
+        try{
+            gamestate = sender.sendMessage("update "+ name);
+        }catch (Exception e){
+            System.out.println("Server Error");
             sender.closeConnection();
         }
+
+    }
+
+    public void putCard(int index){
+        sender.sendMessage("putCard "+ name + " "+ index);
     }
 
     public Sender getSender(){
@@ -66,7 +76,7 @@ public class Runner {
     }
 
     public boolean isTzar(){
-        return tzar;
+        return czar;
     }
 
     public void playCard(WhiteCard c){
@@ -79,9 +89,19 @@ public class Runner {
         bc = new BlackCard(jobj.getString("blackCard"));
         round = jobj.getInt("round");
         JSONArray temp = jobj.getJSONArray("whiteCards");
+        czar = jobj.getBoolean("isCzar");
         wcarr = new WhiteCard[temp.length()];
         for(int i=0;i< wcarr.length;i++){
             wcarr[i] = new WhiteCard(temp.getString(i), i);
+        }
+        temp = jobj.getJSONArray("putCards");
+        pcarr = new WhiteCard[temp.length()];
+        for(int i=0;i< pcarr.length;i++){
+            if(!temp.isNull(i)) {
+                pcarr[i] = new WhiteCard(temp.getString(i), i);
+            }else{
+                continue;
+            }
         }
     }
 
