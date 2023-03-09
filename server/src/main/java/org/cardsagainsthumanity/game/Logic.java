@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,10 +57,11 @@ public class Logic {
         this.round = round;
     }
 
-    public void joinGame(String playerName) {
+    public void joinGame(String playerName, String ip) {
         for (int i = 0; i < players.length; i++) {
             if (players[i] == null) {
                 players[i] = new Player(playerName);
+                players[i].ip = ip;
                 break;
             }
         }
@@ -83,11 +85,15 @@ public class Logic {
         Player player = getPlayer(playerName);
         int round = this.round;
         int score = player.score;
+        // If the host ip is the same as the players ip, role is host, otherwise role is
+        // player
+        String role = player.getRole();
         JSONObject json = new JSONObject();
         json.put("blackCard", blackCard.content);
         json.put("isCzar", player.isCzar);
         json.put("round", round);
         json.put("score", score);
+        json.put("role", role);
         String[] playerNames = new String[100];
         String[] whiteCards = new String[10];
         String[] putCards = new String[100];
