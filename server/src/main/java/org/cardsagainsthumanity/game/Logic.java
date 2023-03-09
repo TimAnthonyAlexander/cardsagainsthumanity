@@ -77,12 +77,27 @@ public class Logic {
         return null;
     }
 
-    public String getUpdate(String playerName) {
+    public String getUpdate() {
+        // Loop through all players and if the ip is the same as the client ip, set
+        // player to that player
+        Player player;
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null) {
+                String ip = players[i].ip;
+                if (ip.equals(InetAddress.getLoopbackAddress().getHostAddress())) {
+                    player = players[i];
+                }
+            }
+        }
+
+        if (player == null) {
+            return "{}";
+        }
+
         updatePull++;
         // Return a json object containing the blackcard, and all whitecards of the
         // player that is requesting the update
         BlackCard blackCard = this.blackCard;
-        Player player = getPlayer(playerName);
         int round = this.round;
         int score = player.score;
         // If the host ip is the same as the players ip, role is host, otherwise role is
@@ -136,6 +151,15 @@ public class Logic {
                     p.whitecards[card] = null;
                     break;
                 }
+            }
+        }
+    }
+
+    public void kickPlayer(String player) {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null && players[i].name.equals(player)) {
+                players[i] = null;
+                break;
             }
         }
     }
