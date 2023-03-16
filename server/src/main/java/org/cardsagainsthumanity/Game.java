@@ -1,45 +1,65 @@
 package org.cardsagainsthumanity;
 
+import org.cardsagainsthumanity.game.Logic;
+
 public class Game {
     public String response;
+    public Logic logic;
 
     public void execute(String message) {
         // Split the message into command and data
 
         String command;
-        String data;
+        String[] split;
 
         // If the message does not contain a space, the command is the whole message
         if (!message.contains(" ")) {
             command = message;
-            data = "";
+            split = new String[0];
         } else {
-            String[] split = message.split(" ", 2);
+            split = message.split(" ", 2);
             command = split[0];
-            data = split[1];
         }
 
-        this.response = runCommand(command, data);
+        this.response = this.runCommand(command, split);
     }
 
-    private static String runCommand(String command, String data) {
+    private String runCommand(String command, String[] data) {
         String response;
 
         switch (command) {
             case "start":
                 response = "Starting game";
+                logic.startGame();
                 break;
             case "stop":
                 response = "Stopping game";
+                logic.stopGame();
+                break;
+            case "join":
+                response = "Joining as " + data[1];
+                logic.joinGame(data[1]);
                 break;
             case "exit":
                 response = "exit_code";
+                logic.stopGame();
+                break;
+            case "kick":
+                response = "Kicking " + data[1];
+                break;
+            case "update":
+                response = logic.getUpdate(data[1]);
+                break;
+            case "putCards":
+                response = "Putting card";
+                logic.putCard(data[1], Integer.parseInt(data[2]));
                 break;
             default:
-                response = "Invalid command";
+                response = "Invalid command: " + command;
                 break;
         }
 
         return response;
     }
+
 }

@@ -1,11 +1,9 @@
 package org.cardsagainsthumanity.receiver;
 
 import org.cardsagainsthumanity.EchoThread;
-import org.cardsagainsthumanity.Game;
-
-import java.io.BufferedReader;
+import org.cardsagainsthumanity.game.Logic;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,14 +16,27 @@ public class Receiver {
         // Listen on port 8761
         ServerSocket serverSocket = null;
 
-        serverSocket = new ServerSocket(8761);
+        // Automatically grab the ip of the user (not the loopback address)
+        InetAddress addr = InetAddress.getLocalHost();
 
+        serverSocket = new ServerSocket(8761, 50, addr);
+
+        System.out.println("Server started on " + addr.getHostAddress() + " on port 8761");
+
+        Logic logic = new Logic();
+
+        int requests = 0;
 
         while (true) {
             Socket socket = null;
             socket = serverSocket.accept();
+            requests++;
 
-            new EchoThread(socket).start();
+            new EchoThread(socket, logic).start();
+
+            if (requests % 100 == 0) {
+                System.out.println("Requests: " + requests);
+            }
         }
     }
 }

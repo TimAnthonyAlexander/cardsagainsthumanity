@@ -1,13 +1,17 @@
 package org.cardsagainsthumanity;
 
+import org.cardsagainsthumanity.game.Logic;
+
 import java.io.*;
 import java.net.Socket;
 
 public class EchoThread extends Thread {
     protected Socket socket;
+    public Logic logic;
 
-    public EchoThread(Socket clientSocket) {
+    public EchoThread(Socket clientSocket, Logic logic) {
         this.socket = clientSocket;
+        this.logic = logic;
     }
 
     public void run() {
@@ -21,8 +25,11 @@ public class EchoThread extends Thread {
         }
 
         Game game = new Game();
+        game.logic = this.logic;
 
         String response;
+
+        System.out.println("Client connected on " + socket.getInetAddress().getHostAddress());
 
         while (true) {
             String message = "";
@@ -33,17 +40,25 @@ public class EchoThread extends Thread {
                 response = game.response;
 
                 if (response.equals("exit_code")) {
+                    System.out.println("Client disconnected on " + socket.getInetAddress().getHostAddress());
                     socket.close();
                     return;
                 }
 
-                response += "\n";
+                response += "\r\n";
 
                 out.writeBytes(response);
 
-                System.out.println(response);
+                if (false) {
+                    System.out.println(response);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                return;
             }
         }
 
