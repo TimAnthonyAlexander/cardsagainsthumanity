@@ -1,13 +1,10 @@
 package org.cardsagainsthumanity.game;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.json.JSONObject;
 import java.io.InputStreamReader;
 import java.util.Random;
@@ -16,15 +13,14 @@ import java.util.Random;
  * 
  */
 public class Logic {
-    public Player[] players;
+    public ArrayList<Player> players = new ArrayList<Player>();
     public BlackCard blackCard = this.blackCard();
     public Integer round = 0;
-    public WhiteCard[] putCards = new WhiteCard[100];
+    public ArrayList<WhiteCard> putCards = new ArrayList<WhiteCard>();
     public int updatePull = 0;
-    public String[] chat = new String[10000];
+    public ArrayList<String> chat = new ArrayList<String>();
 
     public Logic() {
-        players = new Player[100];
     }
 
     /**
@@ -33,6 +29,16 @@ public class Logic {
     public void startGame() {
         round = 1;
         blackCard = this.blackCard();
+
+        // Take a random player and make him .isCzar=true
+        Random rand = new Random();
+        int randomNum = rand.nextInt(players.size());
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null) {
+                players.get(i).isCzar = false;
+            }
+        }
+        players.get(randomNum).isCzar = true;
     }
 
     public void stopGame() {
@@ -40,13 +46,12 @@ public class Logic {
     }
 
     public void joinGame(final String playerName, final String ip) {
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] == null) {
-                players[i] = new Player(playerName);
-                players[i].ip = ip;
-                break;
-            }
+        if (round != 0) {
+            return;
         }
+        Player player = new Player(playerName);
+        player.ip = ip;
+        players.add(player);
         System.out.println("Player " + playerName + " joined the game");
     }
 
@@ -92,25 +97,27 @@ public class Logic {
         json.put("round", round);
         json.put("score", score);
         json.put("role", role);
-        final String[] playerNames = new String[100];
+        final ArrayList<String> playerNames = new ArrayList<String>();
         final String[] whiteCards = new String[10];
-        final String[] putCards = new String[100];
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] != null && players[i].name.equals(player.name)) {
-                for (int j = 0; j < players[i].whitecards.length; j++) {
-                    whiteCards[j] = players[i].whitecards[j].content;
+        final ArrayList<String> putCards = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null && players.get(i).name.equals(player.name)) {
+                for (int j = 0; j < players.get(i).whitecards.length; j++) {
+                    whiteCards[j] = players.get(i).whitecards[j].content;
                 }
                 break;
             }
         }
-        for (int i = 0; i < this.putCards.length; i++) {
-            if (this.putCards[i] != null) {
-                putCards[i] = this.putCards[i].content;
+        // loop over putcards
+        for (int i = 0; i < this.putCards.size(); i++) {
+            if (this.putCards.get(i) != null) {
+                putCards.set(i, this.putCards.get(i).content);
             }
         }
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] != null) {
-                playerNames[i] = players[i].name;
+        // set the player names for each this.players
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null) {
+                playerNames.add(players.get(i).name);
             }
         }
         json.put("putCards", putCards);
@@ -128,17 +135,17 @@ public class Logic {
 
     public void putCard(final String ip, final int card) {
         Player player = null;
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] != null && players[i].ip.equals(ip)) {
-                player = players[i];
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null && players.get(i).ip.equals(ip)) {
+                player = players.get(i);
                 break;
             }
         }
 
         if (player != null) {
-            for (int i = 0; i < putCards.length; i++) {
-                if (putCards[i] == null && player.whitecards[card] != null) {
-                    putCards[i] = player.whitecards[card];
+            for (int i = 0; i < putCards.size(); i++) {
+                if (putCards.get(i) == null && player.whitecards[card] != null) {
+                    putCards.set(i, player.whitecards[card]);
                     player.whitecards[card] = null;
                     break;
                 }
@@ -147,23 +154,18 @@ public class Logic {
     }
 
     public void kickPlayer(final String player) {
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] != null && players[i].name.equals(player)) {
-                players[i] = null;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null && players.get(i).name.equals(player)) {
+                players.set(i, null);
                 break;
             }
         }
     }
 
     public void sendChat(final String ip, final String message) {
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] != null && players[i].ip.equals(ip)) {
-                for (int j = 0; j < chat.length; j++) {
-                    if (chat[j] == null) {
-                        chat[j] = players[i].name + ": " + message;
-                        break;
-                    }
-                }
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null && players.get(i).ip.equals(ip)) {
+                chat.add(players.get(i).name + ": " + message);
                 break;
             }
         }
@@ -178,8 +180,7 @@ public class Logic {
         ArrayList<String> lines = new ArrayList<String>();
         try {
             String line;
-            while ((line = br.readLine()) != null)
-            {
+            while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IOException e) {
