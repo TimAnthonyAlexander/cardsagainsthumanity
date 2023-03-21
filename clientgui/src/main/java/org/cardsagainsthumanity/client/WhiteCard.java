@@ -19,9 +19,8 @@ public class WhiteCard extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int width = ((CardArea)getParent()).getDrawWidthSingleComponent();
-        int drawabletextwidth = (int)(width*0.9);
-
+        int width = ((CardArea)getParent()).getDrawWidthSingleComponent("WhiteCard");
+        int drawableTextWidth = (int)(width*0.9);
         int height = 200;
         int x = 0;
         int y = 0;
@@ -29,32 +28,27 @@ public class WhiteCard extends JPanel {
         g.setColor(Color.WHITE);
         g.fillRect(x,y,width,height);
         g.setColor(Color.BLACK);
-        fillString(text, g, drawabletextwidth,x+5,y+5);
+        fillString(text, g, drawableTextWidth,x+((int)(width*0.1)/2),y+15);
     }
 
-    public void fillString(String s, Graphics g, int drawablewidth, int x, int y){
-        if (g.getFontMetrics().stringWidth(s) <= drawablewidth) {
-            // If it fits, simply draw the string as-is
+    public void fillString(String s, Graphics g, int drawableWidth, int x, int y){
+        if (g.getFontMetrics().stringWidth(s) <= drawableWidth) {
             g.drawString(s, x, y);
         } else {
-            // Otherwise, we need to break up the string and add the portion that goes out of bounds below the visible string
-            String visibleString = "";
-            String hiddenString = s;
-            int ellipsisWidth = g.getFontMetrics().stringWidth("..."); // Get the width of the "..." ellipsis
-
-            // Keep removing characters from the end of the string until it fits within the maxWidth
-            while (g.getFontMetrics().stringWidth(visibleString + "...") < drawablewidth && hiddenString.length() > 0) {
-                visibleString = hiddenString.substring(0, hiddenString.length() - 1);
-                hiddenString = hiddenString.substring(0, hiddenString.length() - 1);
+            String[] splitted = s.split(" ");
+            String line = "";
+            int lineWidth = 0;
+            for (String word : splitted){
+                int wordWidth = g.getFontMetrics().stringWidth(word);
+                if(lineWidth + wordWidth > drawableWidth){
+                    g.drawString(line, x, y);
+                    y += g.getFontMetrics().getHeight();
+                    line = "";
+                }
+                line += word + " ";
+                lineWidth = g.getFontMetrics().stringWidth(line);
             }
-
-            // Draw the visible string with an ellipsis at the end
-            g.drawString(visibleString + "...", x, y);
-
-            // If there is any hidden string left, draw it below the visible string with an ellipsis at the beginning
-            if (hiddenString.length() > 0) {
-                g.drawString("..." + hiddenString, x, y + g.getFontMetrics().getHeight());
-            }
+            g.drawString(line, x, y);
         }
     }
 

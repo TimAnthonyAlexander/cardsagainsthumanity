@@ -1,6 +1,7 @@
 package org.cardsagainsthumanity.client;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -13,10 +14,13 @@ public class GUI extends JFrame{
     private JButton start;
 
     private JPanel waitingscreen;
-    private JPanel gamearea;
+    private GameView gamearea;
+
+    private Container contentPane;
 
     public GUI(Runner prunner){
         this.setPreferredSize(new Dimension(1920,1080));
+
         this.runner = prunner;
         this.setSize(this.getPreferredSize());
         this.addWindowListener(new WindowAdapter() {
@@ -28,6 +32,10 @@ public class GUI extends JFrame{
             }
 
         });
+
+        contentPane = this.getContentPane();
+        contentPane.setPreferredSize(this.getSize());
+        contentPane.setBackground(Color.BLUE);
         init_login();
         this.setVisible(true);
     }
@@ -53,37 +61,17 @@ public class GUI extends JFrame{
     }
 
     public void init_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
-        this.gamearea = new JPanel();
-        gamearea.setLayout(new GridBagLayout());
-        gamearea.setSize(new Dimension(int 1920, int 1080));
+        this.gamearea = new GameView();
+        gamearea.setPreferredSize(this.getSize());
         rebuild_area(hcs, pcs, bc);
     }
 
     public void rebuild_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
         gamearea.removeAll();
-        GridBagConstraints c = new GridBagConstraints();
-        CardArea hc = new CardArea();
-        hc.setWcArr(hcs);
-        hc.addCards();
-        CardArea pc = new CardArea();
-        pc.setWcArr(pcs);
-        pc.addCards();
-        if(runner.isTzar()){
-            pc.setVisible(true);
-            hc.setVisible(false);
-        }else{
-            pc.setVisible(false);
-            hc.setVisible(true);
-        }
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipady = this.getContentPane().getHeight()/3;
-        c.weightx = 0.0;
-        c.gridwidth = 3;
-        c.gridx = 0;
-        c.gridy = 2;
-
-        gamearea.add(pc, c);
-        gamearea.add(hc);
+        gamearea.setBackground(Color.YELLOW);
+        gamearea.setPutCards(pcs);
+        gamearea.setHandCards(hcs);
+        gamearea.setBlackCard(bc);
     }
 
     public void init_login(){
@@ -147,7 +135,8 @@ public class GUI extends JFrame{
     public void setActiveScreen(String type){
         switch(type){
             case "login":
-                this.setContentPane(loginscreen);
+                contentPane.removeAll();
+                contentPane.add(loginscreen);
                 loginscreen.setVisible(true);
                 this.getContentPane().repaint();
                 this.repaint();
@@ -155,16 +144,19 @@ public class GUI extends JFrame{
                 this.revalidate();
                 break;
             case "waiting":
+                contentPane.removeAll();
                 this.getContentPane().repaint();
                 waitingscreen.setVisible(true);
-                this.setContentPane(waitingscreen);
+                contentPane.add(waitingscreen);
                 this.repaint();
                 this.getContentPane().revalidate();
                 this.revalidate();
                 break;
             case "game":
-                this.setContentPane(gamearea);
+                contentPane.removeAll();
+                contentPane.add(gamearea);
                 gamearea.setVisible(true);
+                System.out.printf(gamearea.getPreferredSize().toString());
                 this.getContentPane().repaint();
                 this.repaint();
                 this.getContentPane().revalidate();
