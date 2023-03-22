@@ -17,10 +17,11 @@ public class GUI extends JFrame{
     private GameView gamearea;
 
     private Container contentPane;
+    private DataModel dataModel;
 
-    public GUI(Runner prunner){
+    public GUI(Runner prunner, DataModel dm){
         this.setPreferredSize(new Dimension(1920,1080));
-
+        this.dataModel = dm;
         this.runner = prunner;
         this.setSize(this.getPreferredSize());
         this.addWindowListener(new WindowAdapter() {
@@ -61,7 +62,7 @@ public class GUI extends JFrame{
     }
 
     public void init_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
-        this.gamearea = new GameView();
+        this.gamearea = new GameView(runner, dataModel);
         gamearea.setPreferredSize(this.getSize());
         rebuild_area(hcs, pcs, bc);
     }
@@ -72,6 +73,10 @@ public class GUI extends JFrame{
         gamearea.setPutCards(pcs);
         gamearea.setHandCards(hcs);
         gamearea.setBlackCard(bc);
+    }
+
+    public GameView getGameArea(){
+        return gamearea;
     }
 
     public void init_login(){

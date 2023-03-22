@@ -4,16 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 
 public class WhiteCard extends JPanel {
-
     private String text;
     private int index;
+
     public WhiteCard(String content, int index){
         this.text = content;
         this.index = index;
         this.setBackground(Color.WHITE);
     }
 
-    public String getPassedText() {
+    public String getText() {
         return text;
     }
     @Override
@@ -56,7 +56,7 @@ public class WhiteCard extends JPanel {
         return this.index;
     }
 
-    public void setPassedText(String text) {
+    public void setText(String text) {
         this.text = text;
     }
 }

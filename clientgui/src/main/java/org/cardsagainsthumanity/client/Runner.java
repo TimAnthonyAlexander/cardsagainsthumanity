@@ -8,31 +8,23 @@ import java.io.IOException;
 
 public class Runner {
     private Sender sender;
-    private String name, conn, role;
-    private int score;
-    private int round, previousround;
+    private String name, conn;
     private boolean connected;
 
     private GUI gui;
-
-    private WhiteCard[] pcarr;
-
-
-    private WhiteCard[] wcarr;
-
-    private BlackCard bc;
-
     private String gamestate;
     private boolean czar, waiting;
 
+    private DataModel model;
+
     public Runner() throws IOException, InterruptedException {
+        model = new DataModel();
         name = "";
         conn = "";
         connected = false;
-        round = 0;
-        previousround = 0;
+
         czar = false;
-        gui = new GUI(this);
+        gui = new GUI(this, model);
         gui.setActiveScreen("login");
         while(!connected){
             while(name == "" && conn == ""){
@@ -51,9 +43,9 @@ public class Runner {
                     while(waiting){
                         update();
                         JSONDecoder();
-                        if (gamestarted()){
+                        if (gameStarted()){
                             waiting = false;
-                            gui.init_area(wcarr, pcarr, bc);
+                            gui.init_area(model.getHandCards(), model.getPutCards(), model.getBlackCard());
                             gui.setActiveScreen("game");
                         }
                     }
@@ -72,8 +64,8 @@ public class Runner {
         }
     }
 
-    public boolean gamestarted(){
-        if(round == 1 && previousround == 0){
+    public boolean gameStarted(){
+        if(model.getRound() == 1 && model.getPreviousRound() == 0){
             return true;
         }else {
             return false;
@@ -84,7 +76,7 @@ public class Runner {
     }
 
     public boolean isHost(){
-        if(role.equals("host")){
+        if(model.getRole().equals("host")){
             return true;
         }
         return false;
@@ -93,12 +85,10 @@ public class Runner {
     public void update(){
         try{
             gamestate = sender.sendMessage("update");
-
         }catch (Exception e){
             System.out.println("Server Error");
             sender.closeConnection();
         }
-
     }
 
     public void putCard(int index){
@@ -113,28 +103,28 @@ public class Runner {
         return czar;
     }
 
-    public void playCard(WhiteCard c){
-        sender.sendMessage("play " + c.getIndex());
+    public void playCard(int index){
+        sender.sendMessage("play " + index);
     }
 
     public void JSONDecoder(){
-        if(!(gamestate.equals("error") || gamestate.isEmpty() || gamestate.equals(""))) {
+        if(!(gamestate.isEmpty() || gamestate.equals("error") || gamestate.equals(""))) {
             JSONObject jobj = new JSONObject(gamestate);
-            score = jobj.getInt("score");
-            bc = new BlackCard(jobj.getString("blackCard"));
-            previousround = round;
-            round = jobj.getInt("round");
+            int score = jobj.getInt("score");
+            BlackCard bc = new BlackCard(jobj.getString("blackCard"));
+            int previousRound = model.getRound();
+            int round = jobj.getInt("round");
+            boolean czar = jobj.getBoolean("isCzar");
+            String role = jobj.getString("role");
             JSONArray temp = jobj.getJSONArray("whiteCards");
-            czar = jobj.getBoolean("isCzar");
-            wcarr = new WhiteCard[temp.length()];
-            role = jobj.getString("role");
+            WhiteCard[] wcarr = new WhiteCard[temp.length()];
             for (int i = 0; i < wcarr.length; i++) {
                 if (!temp.isNull(i)) {
                     wcarr[i] = new WhiteCard(temp.getString(i), i);
                 }
             }
             temp = jobj.getJSONArray("putCards");
-            pcarr = new WhiteCard[temp.length()];
+            WhiteCard[] pcarr = new WhiteCard[temp.length()];
             for (int i = 0; i < pcarr.length; i++) {
                 if (!temp.isNull(i)) {
                     pcarr[i] = new WhiteCard(temp.getString(i), i);
@@ -142,6 +132,14 @@ public class Runner {
                     continue;
                 }
             }
+            model.setScore(score);
+            model.setCzar(czar);
+            model.setRound(round);
+            model.setPreviousRound(previousRound);
+            model.setBlackCard(bc);
+            model.setHandCards(wcarr);
+            model.setPutCards(pcarr);
+            model.setRole(role);
         }else{
             System.out.println("Could not update");
         }
