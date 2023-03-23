@@ -63,6 +63,10 @@ public class Game {
                 response = "Sending chat";
                 logic.sendChat(ip, data[1]);
                 break;
+            case "sendServerMessage":
+                response = "Sending server message";
+                logic.sendServerMessage(data[1]);
+                break;
             case "putCard":
                 response = "Putting card";
                 logic.putCard(ip, Integer.parseInt(data[1]));
