@@ -61,7 +61,7 @@ public class CardArea extends JPanel {
                 public void mousePressed(MouseEvent e) {
                     if (type.equals("putCards")) {
                         runner.putCard(wc.getIndex());
-                    }else {
+                    }else{
                         runner.playCard(wc.getIndex());
                     }
                 }

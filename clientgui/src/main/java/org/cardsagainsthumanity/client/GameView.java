@@ -14,6 +14,8 @@ public class GameView extends JPanel implements DataModelListener {
 
     private DataModel dataModel;
 
+    private ChatPanel chat;
+
     private boolean czar;
 
     public GameView(Runner r, DataModel dataModel){
@@ -51,6 +53,10 @@ public class GameView extends JPanel implements DataModelListener {
         }
     }
 
+    public void setChat(ChatPanel c){
+
+    }
+
     public void setPutCards(WhiteCard[] wc){
         this.putCards = new CardArea(runner);
         this.putCards.setWc(wc, "putCards");
@@ -73,6 +79,8 @@ public class GameView extends JPanel implements DataModelListener {
         this.handCards.setWc(model.getHandCards(), "handCards");
         this.czar = model.isCzar();
         checkVisibility();
+        System.out.println("Updated");
+        revalidate();
     }
 
     @Override

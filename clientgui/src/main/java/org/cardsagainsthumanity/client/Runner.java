@@ -104,7 +104,7 @@ public class Runner {
     }
 
     public void playCard(int index){
-        sender.sendMessage("purCard " + index);
+        sender.sendMessage("putCards " + index);
     }
 
     public void JSONDecoder(){

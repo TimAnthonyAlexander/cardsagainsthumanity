@@ -13,6 +13,9 @@ public class DataModel {
 
     private String role;
 
+    private String[] players;
+    private String[] chat;
+
     private WhiteCard[] putCards, handCards;
     private BlackCard blackCard;
 
@@ -53,14 +56,7 @@ public class DataModel {
 
     public void setPutCards(WhiteCard[] putCards) {
         if(this.putCards != null) {
-            int temp = 0;
-            for (int i = 0; i < this.putCards.length; i++) {
-                if (putCards[i] == null) {
-                    temp++;
-                }
-            }
-            if (temp != missingPutCards) {
-                this.missingPutCards = temp;
+            if (putCards.length != this.putCards.length) {
                 this.putCards = putCards;
                 notifyListeners();
             }
@@ -76,16 +72,10 @@ public class DataModel {
 
     public void setHandCards(WhiteCard[] handCards) {
         if(this.handCards != null) {
-            int temp = 0;
-            for (int i = 0; i < this.handCards.length; i++) {
-                if (handCards[i] == null) {
-                    temp++;
-                }
-            }
-            if (temp > removedHandCards) {
-                removedHandCards = temp;
+            if (handCards.length != this.handCards.length) {
                 this.handCards = handCards;
                 notifyListeners();
+
             }
         }else{
             this.handCards = handCards;
@@ -160,5 +150,21 @@ public class DataModel {
         for (DataModelListener listener : listeners) {
             listener.dataModelChanged(this);
         }
+    }
+
+    public String[] getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(String[] players) {
+        this.players = players;
+    }
+
+    public String[] getChat() {
+        return chat;
+    }
+
+    public void setChat(String[] chat) {
+        this.chat = chat;
     }
 }
