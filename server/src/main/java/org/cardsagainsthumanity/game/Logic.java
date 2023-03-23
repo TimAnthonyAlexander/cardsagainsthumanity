@@ -198,7 +198,6 @@ public class Logic {
         if (putCards.get(card) == null) {
             return;
         }
-        
 
         if (player != null && player.isCzar) {
             for (int i = 0; i < players.size(); i++) {
@@ -210,6 +209,32 @@ public class Logic {
             }
             putCards.clear();
             round++;
+            if (round == 10) {
+                round = 0;
+                // Calculate winner
+                int winner = 0;
+                for (int i = 0; i < players.size(); i++) {
+                    if (players.get(i) != null && players.get(i).score > players.get(winner).score) {
+                        winner = i;
+                    }
+                }
+                chat.add("Player " + players.get(winner).name + " won the game!");
+                for (int i = 0; i < players.size(); i++) {
+                    if (players.get(i) != null) {
+                        players.get(i).score = 0;
+                    }
+                }
+                round = 0;
+                // reset all values
+                for (int i = 0; i < players.size(); i++) {
+                    if (players.get(i) != null) {
+                        players.get(i).whitecards.clear();
+                        players.get(i).isCzar = false;
+                    }
+                }
+                startGame();
+            }
+
             blackCard = this.blackCard();
             // Get current czar
             int currentCzar = 0;
@@ -261,17 +286,22 @@ public class Logic {
         chat.add("Server: " + message);
     }
 
-    public void setCzar(final String ip, int player) {
+    public void setCzar(final String ip, int playerId) throws UnknownHostException {
+        Player player = null;
         // Set all players to not czar
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i) != null) {
                 players.get(i).isCzar = false;
+                player = players.get(i);
             }
         }
 
+        if (!player.isHost()) {
+            return;
+        }
+
         // Set the player to czar
-        Player playerToBeCzar = players.get(player);
-        playerToBeCzar.isCzar = true;
+        player.isCzar = true;
     }
 
     private BlackCard blackCard() {
