@@ -19,7 +19,7 @@ public class Receiver {
         // Automatically grab the ip of the user (not the loopback address)
         // If args first argument is null
         InetAddress addr;
-        if (args[0] == null) {
+        if (args.length == 0 || args[0] == null) {
             addr = InetAddress.getLocalHost();
         } else {
             addr = InetAddress.getByName(args[0]);
