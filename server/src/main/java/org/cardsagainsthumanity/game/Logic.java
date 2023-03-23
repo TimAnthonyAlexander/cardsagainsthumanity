@@ -153,6 +153,42 @@ public class Logic {
         }
     }
 
+    public void chooseCard(final String ip, final int card) {
+        Player player = null;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null && players.get(i).ip.equals(ip)) {
+                player = players.get(i);
+                break;
+            }
+        }
+
+        if (player != null && player.isCzar) {
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i) != null && players.get(i).name.equals(putCards.get(card).player.name)) {
+                    players.get(i).score++;
+                    break;
+                }
+            }
+            putCards.clear();
+            for (int i = 0; i < 10; i++) {
+                putCards.add(null);
+            }
+            round++;
+            blackCard = this.blackCard();
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i) != null) {
+                    players.get(i).isCzar = false;
+                }
+            }
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i) != null && players.get(i).name.equals(putCards.get(card).player.name)) {
+                    players.get(i).isCzar = true;
+                    break;
+                }
+            }
+        }
+    }
+
     public void kickPlayer(final String player) {
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i) != null && players.get(i).name.equals(player)) {
