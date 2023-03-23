@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 // This class is the receiver, it loops and waits for any data on port 8761
 // The message starts with a word, which is the command, and the rest of the message is the data
@@ -42,10 +43,15 @@ public class Receiver {
 
         while (true) {
             Socket socket = null;
-            socket = serverSocket.accept();
+            try {
+                socket = serverSocket.accept();
+            } catch (SocketException e) {
+                break;
+            }
+
             requests++;
 
-            new EchoThread(socket, logic).start();
+            new EchoThread(socket, logic, serverSocket).start();
 
             if (requests % 100 == 0) {
                 System.out.println("Requests: " + requests);
