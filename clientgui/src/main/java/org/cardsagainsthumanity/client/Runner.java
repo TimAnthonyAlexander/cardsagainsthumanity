@@ -60,13 +60,13 @@ public class Runner {
         boolean run = true;
         while(run){
             update();
+            Thread.sleep(100);
             try {
                 JSONDecoder();
             }catch (JSONException e){
                 System.out.println(e);
                 System.out.println(gameState);
             }
-            Thread.sleep(100);
         }
     }
 
