@@ -2,6 +2,7 @@ package org.cardsagainsthumanity.client;
 
 import org.cardsagainsthumanity.client.sender.Sender;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -59,7 +60,12 @@ public class Runner {
         boolean run = true;
         while(run){
             update();
-            JSONDecoder();
+            try {
+                JSONDecoder();
+            }catch (JSONException e){
+                System.out.println(e);
+                System.out.println(gameState);
+            }
             Thread.sleep(16);
         }
     }
