@@ -13,8 +13,20 @@ public class Sender {
     private BufferedReader in;
     private Socket clientSocket;
 
-    public Sender(String host) throws IOException{
-        clientSocket = new Socket(host, 8761);
+    public Sender(String code) throws IOException{
+        String host = code;
+        int port = 8761;
+                String[] codArr = code.split(":");
+        if(codArr.length > 1) {
+            host = codArr[0];
+            try {
+                port = Integer.parseInt(codArr[1]);
+            }catch(Exception e){
+                System.out.println(e);
+            }
+        }
+
+        clientSocket = new Socket(host, port);
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }

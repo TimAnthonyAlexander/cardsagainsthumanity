@@ -8,9 +8,6 @@ public class DataModel {
     private int previousRound;
     private int score;
 
-    private int removedHandCards;
-    private int missingPutCards;
-
     private String role;
 
     private String[] players;
@@ -22,11 +19,6 @@ public class DataModel {
     private boolean czar;
 
     private List<DataModelListener> listeners = new ArrayList<DataModelListener>();
-
-    public DataModel(){
-        removedHandCards = 0;
-        missingPutCards = 0;
-    }
 
     public int getRound() {
         return round;
@@ -157,6 +149,15 @@ public class DataModel {
     }
 
     public void setPlayers(String[] players) {
+        if(this.players != null) {
+            if (players.length != this.players.length) {
+                this.players = chat;
+                notifyListeners();
+            }
+        }else{
+            this.players = players;
+            notifyListeners();
+        }
         this.players = players;
     }
 
@@ -165,6 +166,15 @@ public class DataModel {
     }
 
     public void setChat(String[] chat) {
+        if(this.chat != null) {
+            if (chat.length != this.chat.length) {
+                this.chat = chat;
+                notifyListeners();
+            }
+        }else{
+            this.chat = chat;
+            notifyListeners();
+        }
         this.chat = chat;
     }
 }

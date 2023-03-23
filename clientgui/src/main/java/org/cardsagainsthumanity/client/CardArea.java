@@ -79,8 +79,4 @@ public class CardArea extends JPanel {
             this.add(Box.createRigidArea(new Dimension(10, 0)));
         }
     }
-
-    private void updateCards(){
-
-    }
 }
