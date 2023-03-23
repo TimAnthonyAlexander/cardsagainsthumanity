@@ -204,6 +204,7 @@ public class Logic {
                 System.out.println("Choose card: " + card);
                 if (players.get(i) != null && players.get(i).name.equals(putCards.get(card).player.name)) {
                     players.get(i).score++;
+                    sendServerMessage("Player " + players.get(i).name + " won the round!");
                     break;
                 }
             }
