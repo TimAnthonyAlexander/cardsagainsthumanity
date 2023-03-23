@@ -92,7 +92,7 @@ public class Runner {
     }
 
     public void putCard(int index){
-        sender.sendMessage("putCard "+ index);
+        sender.sendMessage("chooseCard "+ index);
     }
 
     public Sender getSender(){
@@ -104,7 +104,7 @@ public class Runner {
     }
 
     public void playCard(int index){
-        sender.sendMessage("play " + index);
+        sender.sendMessage("purCard " + index);
     }
 
     public void JSONDecoder(){
