@@ -36,7 +36,7 @@ public class EchoThread extends Thread {
 
             try {
                 message = in.readLine();
-                game.execute(message, socket.getInetAddress().getHostAddress());
+                game.execute(message, socket.getInetAddress().getHostAddress(), socket);
                 response = game.response;
 
                 if (response.equals("exit_code")) {
