@@ -12,12 +12,18 @@ import java.net.Socket;
 public class Receiver {
     public String message = "";
 
-    public Receiver() throws IOException {
+    public Receiver(String[] args) throws IOException {
         // Listen on port 8761
         ServerSocket serverSocket = null;
 
         // Automatically grab the ip of the user (not the loopback address)
-        InetAddress addr = InetAddress.getLocalHost();
+        // If args first argument is null
+        InetAddress addr;
+        if (args[0] == null) {
+            addr = InetAddress.getLocalHost();
+        } else {
+            addr = InetAddress.getByName(args[0]);
+        }
 
         serverSocket = new ServerSocket(8761, 50, addr);
 
