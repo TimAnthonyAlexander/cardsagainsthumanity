@@ -3,6 +3,7 @@ package org.cardsagainsthumanity.game;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -47,8 +48,9 @@ public class Logic {
         sendServerMessage("Player " + players.get(randomNum).name + " is the czar");
     }
 
-    public void stopGame() {
-
+    public void stopGame(Socket socket) throws IOException {
+        sendServerMessage("Game stopped");
+        socket.close();
     }
 
     public void joinGame(final String playerName, final String ip) {
