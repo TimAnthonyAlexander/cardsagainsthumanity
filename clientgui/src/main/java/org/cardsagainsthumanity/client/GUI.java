@@ -1,6 +1,7 @@
 package org.cardsagainsthumanity.client;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -9,10 +10,18 @@ import java.awt.event.WindowListener;
 public class GUI extends JFrame{
     private Runner runner;
     private JPanel loginscreen;
-    private JPanel gamearea;
 
-    public GUI(Runner prunner){
+    private JButton start;
+
+    private JPanel waitingscreen;
+    private GameView gamearea;
+
+    private Container contentPane;
+    private DataModel dataModel;
+
+    public GUI(Runner prunner, DataModel dm){
         this.setPreferredSize(new Dimension(1920,1080));
+        this.dataModel = dm;
         this.runner = prunner;
         this.setSize(this.getPreferredSize());
         this.addWindowListener(new WindowAdapter() {
@@ -24,26 +33,50 @@ public class GUI extends JFrame{
             }
 
         });
-        init_login();
 
+        contentPane = this.getContentPane();
+        contentPane.setPreferredSize(this.getSize());
+        contentPane.setBackground(Color.BLUE);
+        init_login();
+        this.setVisible(true);
     }
 
-    public void init_area(){
-        this.gamearea = new JPanel();
-        gamearea.setLayout(new GridBagLayout());
+    public void init_waitingscreen(){
+        this.waitingscreen = new JPanel();
+        waitingscreen.setLayout(new GridBagLayout());
+        JPanel center = new JPanel();
+
+        JLabel waitingtext = new JLabel("Waiting for other Players");
+        JButton hoststart = new JButton("Start Game");
+        if (!runner.isHost()) {
+            hoststart.setVisible(false);
+        }
+        hoststart.addActionListener(e -> {
+            runner.startGame();
+        });
+
+        center.add(waitingtext);
+        center.add(hoststart);
+
+        waitingscreen.add(center);
+    }
+
+    public void init_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
+        this.gamearea = new GameView(runner, dataModel);
+        gamearea.setPreferredSize(this.getSize());
+        rebuild_area(hcs, pcs, bc);
     }
 
     public void rebuild_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
         gamearea.removeAll();
-        GridBagConstraints c = new GridBagConstraints();
-        if(runner.isTzar()){
+        gamearea.setBackground(Color.YELLOW);
+        gamearea.setPutCards(pcs);
+        gamearea.setHandCards(hcs);
+        gamearea.setBlackCard(bc);
+    }
 
-        }else{
-            JPanel handcardarea = new JPanel();
-            for(WhiteCard w : hcs){
-                handcardarea.add(w);
-            }
-        }
+    public GameView getGameArea(){
+        return gamearea;
     }
 
     public void init_login(){
@@ -102,13 +135,41 @@ public class GUI extends JFrame{
 
 
         loginscreen.add(formfield);
-
-        this.add(loginscreen);
-
-        this.setVisible(true);
     }
 
-    public void hide_login(){
-        this.loginscreen.setVisible(false);
+    public void setActiveScreen(String type){
+        switch(type){
+            case "login":
+                contentPane.removeAll();
+                contentPane.add(loginscreen);
+                loginscreen.setVisible(true);
+                this.getContentPane().repaint();
+                this.repaint();
+                this.getContentPane().revalidate();
+                this.revalidate();
+                break;
+            case "waiting":
+                contentPane.removeAll();
+                this.getContentPane().repaint();
+                waitingscreen.setVisible(true);
+                contentPane.add(waitingscreen);
+                this.repaint();
+                this.getContentPane().revalidate();
+                this.revalidate();
+                break;
+            case "game":
+                contentPane.removeAll();
+                contentPane.add(gamearea);
+                gamearea.setVisible(true);
+                System.out.printf(gamearea.getPreferredSize().toString());
+                this.getContentPane().repaint();
+                this.repaint();
+                this.getContentPane().revalidate();
+                this.revalidate();
+                break;
+            default:
+                System.out.println("LELEL");
+                break;
+        }
     }
 }
