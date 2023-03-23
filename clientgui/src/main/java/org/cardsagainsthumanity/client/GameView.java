@@ -72,7 +72,7 @@ public class GameView extends JPanel implements DataModelListener {
         this.putCards.setWc(model.getPutCards(),"putCards");
         this.handCards.setWc(model.getHandCards(), "handCards");
         this.czar = model.isCzar();
-        //checkVisibility();
+        checkVisibility();
     }
 
     @Override
