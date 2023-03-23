@@ -199,6 +199,11 @@ public class Logic {
             }
         }
 
+        // If index is out of bounds, return
+        if (card >= putCards.size()) {
+            return;
+        }
+
         // Check if card exists in putCards
         if (putCards.get(card) == null) {
             return;
