@@ -66,7 +66,7 @@ public class Runner {
                 System.out.println(e);
                 System.out.println(gameState);
             }
-            Thread.sleep(16);
+            Thread.sleep(100);
         }
     }
 
