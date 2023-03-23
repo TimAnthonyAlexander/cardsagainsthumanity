@@ -270,8 +270,8 @@ public class Logic {
             }
             players.get(newCzar).isCzar = true;
             putPlayers.clear();
-            System.out.println("Player " + newCzar + " is now czar");
             sendServerMessage("Player " + players.get(newCzar).name + " is now czar");
+            System.out.println("Player " + players.get(newCzar).name + " is now czar");
         }
     }
 
