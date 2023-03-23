@@ -99,11 +99,11 @@ public class Logic {
         // player
         final String role = player.getRole();
         final JSONObject json = new JSONObject();
-        json.put("blackCard", blackCard.content);
-        json.put("isCzar", player.isCzar);
         json.put("round", round);
         json.put("score", score);
         json.put("role", role);
+        json.put("blackCard", blackCard.content);
+        json.put("isCzar", player.isCzar);
         final ArrayList<String> playerNames = new ArrayList<String>();
         final ArrayList<String> whiteCards = new ArrayList<String>();
         for (int i = 0; i < players.size(); i++) {
