@@ -29,8 +29,9 @@ public class GameView extends JPanel implements DataModelListener {
                 int width = getWidth();
                 int height = getHeight();
                 handCards.setPreferredSize(new Dimension(width, height / 3));
-                blackCard.setPreferredSize(new Dimension(width / 10, height / 3));
+                blackCard.setPreferredSize(new Dimension(width * 1 / 5, height / 3));
                 putCards.setPreferredSize(new Dimension(width * 3 / 5, height / 3));
+                chat.setPreferredSize(new Dimension(width * 1 / 5, height * 2 / 3));
                 revalidate();
             }
         });
@@ -54,7 +55,9 @@ public class GameView extends JPanel implements DataModelListener {
     }
 
     public void setChat(ChatPanel c){
-
+        this.chat = c;
+        this.chat.setPreferredSize(new Dimension(this.getWidth() * 1 / 5, this.getHeight() * 2 / 3));
+        this.add(c, BorderLayout.LINE_END);
     }
 
     public void setPutCards(WhiteCard[] wc){
@@ -68,7 +71,7 @@ public class GameView extends JPanel implements DataModelListener {
     public void setBlackCard(BlackCard bc){
         this.blackCard = new CardArea(runner);
         this.blackCard.setBC(bc);
-        this.blackCard.setPreferredSize(new Dimension(this.getWidth()/10, this.getHeight()/3));
+        this.blackCard.setPreferredSize(new Dimension(this.getWidth() * 1 / 5, this.getHeight()/3));
         this.blackCard.setBackground(Color.RED);
         this.add(blackCard, BorderLayout.LINE_START);
     }
@@ -77,10 +80,12 @@ public class GameView extends JPanel implements DataModelListener {
         this.blackCard.setBC(model.getBlackCard());
         this.putCards.setWc(model.getPutCards(),"putCards");
         this.handCards.setWc(model.getHandCards(), "handCards");
+        this.chat.updateChat(model.getChat());
         this.czar = model.isCzar();
         checkVisibility();
         System.out.println("Updated");
         revalidate();
+        repaint();
     }
 
     @Override

@@ -1,11 +1,9 @@
 package org.cardsagainsthumanity.client;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 public class GUI extends JFrame{
     private Runner runner;
@@ -13,16 +11,19 @@ public class GUI extends JFrame{
 
     private JButton start;
 
-    private JPanel waitingscreen;
-    private GameView gamearea;
+    private WaitingScreen waitingScreen;
+    private GameView gameArea;
 
     private Container contentPane;
+
+    private ChatPanel chat;
     private DataModel dataModel;
 
     public GUI(Runner prunner, DataModel dm){
         this.setPreferredSize(new Dimension(1920,1080));
         this.dataModel = dm;
         this.runner = prunner;
+        this.chat = new ChatPanel(runner);
         this.setSize(this.getPreferredSize());
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -41,42 +42,27 @@ public class GUI extends JFrame{
         this.setVisible(true);
     }
 
-    public void init_waitingscreen(){
-        this.waitingscreen = new JPanel();
-        waitingscreen.setLayout(new GridBagLayout());
-        JPanel center = new JPanel();
-
-        JLabel waitingtext = new JLabel("Waiting for other Players");
-        JButton hoststart = new JButton("Start Game");
-        if (!runner.isHost()) {
-            hoststart.setVisible(false);
-        }
-        hoststart.addActionListener(e -> {
-            runner.startGame();
-        });
-
-        center.add(waitingtext);
-        center.add(hoststart);
-
-        waitingscreen.add(center);
+    public void initWaitingScreen(){
+        this.waitingScreen = new WaitingScreen(runner, chat, dataModel);
     }
 
     public void init_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
-        this.gamearea = new GameView(runner, dataModel);
-        gamearea.setPreferredSize(this.getSize());
+        this.gameArea = new GameView(runner, dataModel);
+        gameArea.setPreferredSize(this.getSize());
         rebuild_area(hcs, pcs, bc);
     }
 
     public void rebuild_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
-        gamearea.removeAll();
-        gamearea.setBackground(Color.YELLOW);
-        gamearea.setPutCards(pcs);
-        gamearea.setHandCards(hcs);
-        gamearea.setBlackCard(bc);
+        gameArea.removeAll();
+        gameArea.setBackground(Color.YELLOW);
+        gameArea.setPutCards(pcs);
+        gameArea.setHandCards(hcs);
+        gameArea.setBlackCard(bc);
+        gameArea.setChat(chat);
     }
 
     public GameView getGameArea(){
-        return gamearea;
+        return gameArea;
     }
 
     public void init_login(){
@@ -151,17 +137,18 @@ public class GUI extends JFrame{
             case "waiting":
                 contentPane.removeAll();
                 this.getContentPane().repaint();
-                waitingscreen.setVisible(true);
-                contentPane.add(waitingscreen);
+                waitingScreen.setVisible(true);
+                contentPane.add(waitingScreen);
                 this.repaint();
                 this.getContentPane().revalidate();
                 this.revalidate();
                 break;
             case "game":
+                waitingScreen.removeListener();
                 contentPane.removeAll();
-                contentPane.add(gamearea);
-                gamearea.setVisible(true);
-                System.out.printf(gamearea.getPreferredSize().toString());
+                contentPane.add(gameArea);
+                gameArea.setVisible(true);
+                System.out.printf(gameArea.getPreferredSize().toString());
                 this.getContentPane().repaint();
                 this.repaint();
                 this.getContentPane().revalidate();

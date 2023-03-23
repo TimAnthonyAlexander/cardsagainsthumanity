@@ -12,7 +12,7 @@ public class Runner {
     private boolean connected;
 
     private GUI gui;
-    private String gamestate;
+    private String gameState;
     private boolean czar, waiting;
 
     private DataModel model;
@@ -37,7 +37,7 @@ public class Runner {
                     sender.sendMessage("join " + name);
                     update();
                     JSONDecoder();
-                    gui.init_waitingscreen();
+                    gui.initWaitingScreen();
                     gui.setActiveScreen("waiting");
                     waiting = true;
                     while(waiting){
@@ -82,9 +82,13 @@ public class Runner {
         return false;
     }
 
+    public void sendMessage(String message){
+        sender.sendMessage("sendChat "+ message);
+    }
+
     public void update(){
         try{
-            gamestate = sender.sendMessage("update");
+            gameState = sender.sendMessage("update");
         }catch (Exception e){
             System.out.println("Server Error");
             sender.closeConnection();
@@ -92,7 +96,9 @@ public class Runner {
     }
 
     public void putCard(int index){
-        sender.sendMessage("chooseCard "+ index);
+        if(model.getPlayers().length-1 == model.getPutCards().length) {
+            sender.sendMessage("chooseCard " + index);
+        }
     }
 
     public Sender getSender(){
@@ -104,12 +110,12 @@ public class Runner {
     }
 
     public void playCard(int index){
-        sender.sendMessage("putCards " + index);
+        sender.sendMessage("putCard " + index);
     }
 
     public void JSONDecoder(){
-        if(!(gamestate.isEmpty() || gamestate.equals("error") || gamestate.equals(""))) {
-            JSONObject jobj = new JSONObject(gamestate);
+        if(!(gameState.isEmpty() || gameState.equals("error") || gameState.equals(""))) {
+            JSONObject jobj = new JSONObject(gameState);
             int score = jobj.getInt("score");
             BlackCard bc = new BlackCard(jobj.getString("blackCard"));
             int previousRound = model.getRound();
@@ -132,6 +138,24 @@ public class Runner {
                     continue;
                 }
             }
+            temp = jobj.getJSONArray("chat");
+            String[] chat = new String[temp.length()];
+            for (int i = 0; i < chat.length; i++) {
+                if (!temp.isNull(i)) {
+                    chat[i] = temp.getString(i);
+                } else {
+                    continue;
+                }
+            }
+            temp = jobj.getJSONArray("playerNames");
+            String[] playerNames = new String[temp.length()];
+            for (int i = 0; i < playerNames.length; i++) {
+                if (!temp.isNull(i)) {
+                    playerNames[i] = temp.getString(i);
+                } else {
+                    continue;
+                }
+            }
             model.setScore(score);
             model.setCzar(czar);
             model.setRound(round);
@@ -140,6 +164,8 @@ public class Runner {
             model.setHandCards(wcarr);
             model.setPutCards(pcarr);
             model.setRole(role);
+            model.setChat(chat);
+            model.setPlayers(playerNames);
         }else{
             System.out.println("Could not update");
         }
