@@ -3,15 +3,18 @@ package org.cardsagainsthumanity;
 import org.cardsagainsthumanity.game.Logic;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class EchoThread extends Thread {
     protected Socket socket;
     public Logic logic;
+    protected ServerSocket serverSocket;
 
-    public EchoThread(Socket clientSocket, Logic logic) {
+    public EchoThread(Socket clientSocket, Logic logic, ServerSocket serverSocket) {
         this.socket = clientSocket;
         this.logic = logic;
+        this.serverSocket = serverSocket;
     }
 
     public void run() {
@@ -36,7 +39,7 @@ public class EchoThread extends Thread {
 
             try {
                 message = in.readLine();
-                game.execute(message, socket.getInetAddress().getHostAddress(), socket);
+                game.execute(message, socket.getInetAddress().getHostAddress(), socket, serverSocket);
                 response = game.response;
 
                 if (response.equals("exit_code")) {
