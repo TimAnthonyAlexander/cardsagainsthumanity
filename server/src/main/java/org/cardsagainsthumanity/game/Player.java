@@ -4,23 +4,20 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class Player {
     public String name;
     public int score;
-    public WhiteCard[] whitecards;
+    public ArrayList<WhiteCard> whitecards = new ArrayList<WhiteCard>();
     public boolean isCzar = false;
     public String ip = "";
 
     public Player(String name) {
         this.name = name;
         this.score = 0;
-        this.whitecards = new WhiteCard[10];
-        for (int i = 0; i < whitecards.length; i++) {
-            whitecards[i] = this.whiteCard();
+        for (int i = 0; i < 10; i++) {
+            whitecards.add(this.whiteCard());
         }
     }
 
@@ -40,8 +37,7 @@ public class Player {
         ArrayList<String> lines = new ArrayList<String>();
         try {
             String line;
-            while ((line = br.readLine()) != null)
-            {
+            while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IOException e) {

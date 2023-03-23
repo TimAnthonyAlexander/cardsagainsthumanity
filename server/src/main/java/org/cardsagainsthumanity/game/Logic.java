@@ -13,12 +13,16 @@ import java.util.Random;
  * 
  */
 public class Logic {
+    private static final int ROUNDS = 10;
+
     public ArrayList<Player> players = new ArrayList<Player>();
     public BlackCard blackCard = this.blackCard();
+    public ArrayList<Player> putPlayers = new ArrayList<Player>();
     public Integer round = 0;
     public ArrayList<WhiteCard> putCards = new ArrayList<WhiteCard>();
     public int updatePull = 0;
     public ArrayList<String> chat = new ArrayList<String>();
+    public Player winner = null;
 
     public Logic() {
     }
@@ -39,6 +43,8 @@ public class Logic {
             }
         }
         players.get(randomNum).isCzar = true;
+        System.out.println("Player " + players.get(randomNum).name + " is the czar");
+        sendServerMessage("Player " + players.get(randomNum).name + " is the czar");
     }
 
     public void stopGame() {
@@ -53,6 +59,7 @@ public class Logic {
         player.ip = ip;
         players.add(player);
         System.out.println("Player " + playerName + " joined the game");
+        sendServerMessage("Player " + playerName + " joined the game");
     }
 
     public Player getPlayer(final String name) {
@@ -98,26 +105,28 @@ public class Logic {
         json.put("score", score);
         json.put("role", role);
         final ArrayList<String> playerNames = new ArrayList<String>();
-        final String[] whiteCards = new String[10];
-        final ArrayList<String> putCards = new ArrayList<>();
+        final ArrayList<String> whiteCards = new ArrayList<String>();
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i) != null && players.get(i).name.equals(player.name)) {
-                for (int j = 0; j < players.get(i).whitecards.length; j++) {
-                    whiteCards[j] = players.get(i).whitecards[j].content;
+                for (int j = 0; j < players.get(i).whitecards.size(); j++) {
+                    if (players.get(i).whitecards.get(j) != null) {
+                        whiteCards.add(players.get(i).whitecards.get(j).content);
+                    }
                 }
                 break;
-            }
-        }
-        // loop over putcards
-        for (int i = 0; i < this.putCards.size(); i++) {
-            if (this.putCards.get(i) != null) {
-                putCards.set(i, this.putCards.get(i).content);
             }
         }
         // set the player names for each this.players
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i) != null) {
                 playerNames.add(players.get(i).name);
+            }
+        }
+        final ArrayList<String> putCards = new ArrayList<String>();
+        // for each this.putCards, add the content to putCards
+        for (int i = 0; i < this.putCards.size(); i++) {
+            if (this.putCards.get(i) != null) {
+                putCards.add(this.putCards.get(i).content);
             }
         }
         json.put("putCards", putCards);
@@ -134,6 +143,10 @@ public class Logic {
     }
 
     public void putCard(final String ip, final int card) {
+        if (round == 0) {
+            return;
+        }
+
         Player player = null;
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i) != null && players.get(i).ip.equals(ip)) {
@@ -142,13 +155,25 @@ public class Logic {
             }
         }
 
+        if (player.isCzar) {
+            return;
+        }
+
+        // If the player is in putPlayers, return
+        for (int i = 0; i < putPlayers.size(); i++) {
+            if (putPlayers.get(i) != null && putPlayers.get(i) == player) {
+                return;
+            }
+        }
+
+        System.out.println("Player " + player.name + " put card " + card);
+
         if (player != null) {
-            for (int i = 0; i < putCards.size(); i++) {
-                if (putCards.get(i) == null && player.whitecards[card] != null) {
-                    putCards.set(i, player.whitecards[card]);
-                    player.whitecards[card] = null;
-                    break;
-                }
+
+            if (player.whitecards.get(card) != null) {
+                putCards.add(player.whitecards.get(card));
+                player.whitecards.remove(card);
+                putPlayers.add(player);
             }
         }
     }
@@ -162,30 +187,55 @@ public class Logic {
             }
         }
 
+        // print out all putcards
+        for (int i = 0; i < putCards.size(); i++) {
+            if (putCards.get(i) != null) {
+                System.out.println("Putcard: " + putCards.get(i).content + " with index " + i);
+            }
+        }
+
+        // Check if card exists in putCards
+        if (putCards.get(card) == null) {
+            return;
+        }
+        
+
         if (player != null && player.isCzar) {
             for (int i = 0; i < players.size(); i++) {
+                System.out.println("Choose card: " + card);
                 if (players.get(i) != null && players.get(i).name.equals(putCards.get(card).player.name)) {
                     players.get(i).score++;
                     break;
                 }
             }
             putCards.clear();
-            for (int i = 0; i < 10; i++) {
-                putCards.add(null);
-            }
             round++;
             blackCard = this.blackCard();
+            // Get current czar
+            int currentCzar = 0;
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i) != null && players.get(i).isCzar) {
+                    currentCzar = i;
+                    break;
+                }
+            }
+            // set all czars false
             for (int i = 0; i < players.size(); i++) {
                 if (players.get(i) != null) {
                     players.get(i).isCzar = false;
                 }
             }
-            for (int i = 0; i < players.size(); i++) {
-                if (players.get(i) != null && players.get(i).name.equals(putCards.get(card).player.name)) {
-                    players.get(i).isCzar = true;
-                    break;
-                }
+            // Calculate next in row
+            int newCzar;
+            if (currentCzar == players.size() - 1) {
+                newCzar = 0;
+            } else {
+                newCzar = currentCzar + 1;
             }
+            players.get(newCzar).isCzar = true;
+            putPlayers.clear();
+            System.out.println("Player " + newCzar + " is now czar");
+            sendServerMessage("Player " + players.get(newCzar).name + " is now czar");
         }
     }
 
@@ -205,6 +255,23 @@ public class Logic {
                 break;
             }
         }
+    }
+
+    public void sendServerMessage(final String message) {
+        chat.add("Server: " + message);
+    }
+
+    public void setCzar(final String ip, int player) {
+        // Set all players to not czar
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != null) {
+                players.get(i).isCzar = false;
+            }
+        }
+
+        // Set the player to czar
+        Player playerToBeCzar = players.get(player);
+        playerToBeCzar.isCzar = true;
     }
 
     private BlackCard blackCard() {
