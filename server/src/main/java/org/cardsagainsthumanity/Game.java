@@ -2,13 +2,17 @@ package org.cardsagainsthumanity;
 
 import org.cardsagainsthumanity.game.Logic;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Game {
     public String response;
     public Logic logic;
 
-    public void execute(String message, String ip) throws UnknownHostException {
+    public void execute(String message, String ip, Socket socket, ServerSocket serverSocket)
+            throws UnknownHostException, IOException {
         // Split the message into command and data
 
         String command;
@@ -23,10 +27,11 @@ public class Game {
             command = split[0];
         }
 
-        this.response = this.runCommand(command, split, ip);
+        this.response = this.runCommand(command, split, ip, socket, serverSocket);
     }
 
-    private String runCommand(String command, String[] data, String ip) throws UnknownHostException {
+    private String runCommand(String command, String[] data, String ip, Socket socket, ServerSocket serverSocket)
+            throws UnknownHostException, IOException {
         String response;
 
         // Ip of the connecting client
@@ -38,7 +43,7 @@ public class Game {
                 break;
             case "stop":
                 response = "Stopping game";
-                logic.stopGame();
+                logic.stopGame(socket, serverSocket);
                 break;
             case "join":
                 response = "Joining as " + data[1];
@@ -46,7 +51,6 @@ public class Game {
                 break;
             case "exit":
                 response = "exit_code";
-                logic.stopGame();
                 break;
             case "kick":
                 response = "Kicking " + data[1];
