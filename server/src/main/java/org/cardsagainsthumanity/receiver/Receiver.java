@@ -26,7 +26,7 @@ public class Receiver {
         }
 
         int port;
-        if (args.length == 1 || args[1] == null) {
+        if (args.length < 2 || args[1] == null) {
             port = 8761;
         } else {
             port = Integer.parseInt(args[1]);
