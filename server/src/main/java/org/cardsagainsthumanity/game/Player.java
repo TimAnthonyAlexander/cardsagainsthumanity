@@ -58,6 +58,6 @@ public class Player {
         Random rand = new Random();
         int randomNum = rand.nextInt(lines.size());
         String line = lines.get(randomNum);
-        return new WhiteCard(line);
+        return new WhiteCard(line, this);
     }
 }

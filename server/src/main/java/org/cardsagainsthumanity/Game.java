@@ -63,6 +63,10 @@ public class Game {
                 response = "Putting card";
                 logic.putCard(ip, Integer.parseInt(data[1]));
                 break;
+            case "chooseCard":
+                response = "Choosing card as czar";
+                logic.chooseCard(ip, Integer.parseInt(data[1]));
+                break;
             default:
                 response = "Invalid command: " + command;
                 break;
