@@ -25,9 +25,16 @@ public class Receiver {
             addr = InetAddress.getByName(args[0]);
         }
 
-        serverSocket = new ServerSocket(8761, 50, addr);
+        int port;
+        if (args.length == 1 || args[1] == null) {
+            port = 8761;
+        } else {
+            port = Integer.parseInt(args[1]);
+        }
 
-        System.out.println("Server started on " + addr.getHostAddress() + " on port 8761");
+        serverSocket = new ServerSocket(port, 50, addr);
+
+        System.out.println("Server started on " + addr.getHostAddress() + " on port " + port);
 
         Logic logic = new Logic();
 
