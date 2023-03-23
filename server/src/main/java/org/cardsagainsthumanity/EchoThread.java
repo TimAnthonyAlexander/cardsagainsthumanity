@@ -41,6 +41,7 @@ public class EchoThread extends Thread {
 
                 if (response.equals("exit_code")) {
                     System.out.println("Client disconnected on " + socket.getInetAddress().getHostAddress());
+                    game.logic.sendServerMessage("Client disconnected on " + socket.getInetAddress().getHostAddress());
                     socket.close();
                     return;
                 }
@@ -48,10 +49,6 @@ public class EchoThread extends Thread {
                 response += "\r\n";
 
                 out.writeBytes(response);
-
-                if (false) {
-                    System.out.println(response);
-                }
             } catch (IOException e) {
                 try {
                     socket.close();
