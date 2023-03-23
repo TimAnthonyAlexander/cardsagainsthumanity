@@ -244,6 +244,7 @@ public class Logic {
                     }
                 }
                 startGame();
+                return;
             }
 
             blackCard = this.blackCard();
