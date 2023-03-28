@@ -6,7 +6,6 @@ import java.awt.*;
 public class ChatPanel extends JPanel {
     private final JTextField inputField;
     private final JTextArea chatField;
-    private final JButton send;
 
     public ChatPanel(Runner r){
         this.setLayout(new GridBagLayout());
@@ -15,7 +14,6 @@ public class ChatPanel extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5,5,5,5);
 
-        // Create the chat text area and add it to the panel
         chatField = new JTextArea(20,50);
         chatField.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(chatField);
@@ -28,7 +26,6 @@ public class ChatPanel extends JPanel {
         c.fill = GridBagConstraints.BOTH;
         add(scrollPane, c);
 
-        // Create the input text field and add it to the panel
         inputField = new JTextField(30);
         c.gridx = 0;
         c.gridy = 1;
@@ -38,8 +35,7 @@ public class ChatPanel extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         add(inputField, c);
 
-        // Create the send button and add it to the panel
-        send = new JButton("Send");
+        JButton send = new JButton("Send");
         send.addActionListener(e -> {
             String text = inputField.getText();
             if(text.length()>1){

@@ -5,14 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.InetAddress;
-import java.net.SocketException;
 
 public class Sender {
 
-    private PrintWriter out;
-    private BufferedReader in;
-    private Socket clientSocket;
+    private final PrintWriter out;
+    private final BufferedReader in;
+    private final Socket clientSocket;
 
     public Sender(String code) throws IOException{
         String host = code;
@@ -23,7 +21,7 @@ public class Sender {
             try {
                 port = Integer.parseInt(codArr[1]);
             }catch(Exception e){
-                System.out.println(e);
+                System.out.println("Please input a valid port");
             }
         }
 
@@ -39,23 +37,20 @@ public class Sender {
     public String sendMessage(String msg){
         try{
             out.println(msg);
-            String resp = in.readLine();
-            return resp;
+            return in.readLine();
         }catch(IOException e){
-            //e.printStackTrace();
             return "Connection lost";
         }
     }
 
-    public String closeConnection(){
+    public void closeConnection(){
         try{
             in.close();
             out.close();
             clientSocket.close();
-            return "Closed Successfully";
+            System.out.println("Closed Successfully");
         }catch(IOException e){
-            e.printStackTrace();
-            return "Critical failure in closing connection";
+            System.out.println("Critical failure in closing connection");
         }
     }
 }

@@ -11,13 +11,9 @@ public class GameView extends JPanel implements DataModelListener {
     private CardArea putCards;
     private CardArea blackCard;
     private final Runner runner;
-
     private final DataModel dataModel;
-
     private ScoreBoard scoreBoard;
-
     private ChatPanel chat;
-
     private boolean czar;
 
     public GameView(Runner r, DataModel dataModel){
@@ -45,7 +41,7 @@ public class GameView extends JPanel implements DataModelListener {
             this.handCards.setVisible(false);
             this.putCards.setVisible(true);
         }else{
-            this.handCards.setVisible(true);
+            this.handCards.setVisible(this.handCards.getVisibility());
             this.putCards.setVisible(false);
         }
     }

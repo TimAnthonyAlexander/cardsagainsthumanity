@@ -4,36 +4,31 @@ import org.cardsagainsthumanity.client.sender.Sender;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONPointerException;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.UUID;
 
 public class Runner implements DataModelListener{
     private Sender sender;
     private String name, conn;
-    private boolean connected;
 
-    private GUI gui;
+    private final GUI gui;
     private String gameState;
-    private boolean czar, waiting;
 
-    private DataModel model;
+    private final DataModel model;
 
-    public Runner() throws IOException, InterruptedException {
+    public Runner() throws InterruptedException {
         model = new DataModel();
         name = "";
         conn = "";
-        connected = false;
+        boolean connected = false;
 
         model.addListener(this);
 
-        czar = false;
         gui = new GUI(this, model);
         gui.setActiveScreen("login");
         while(!connected){
-            while(name == "" && conn == ""){
+            while(name.equals("") && conn.equals("")){
                 Thread.sleep(1000);
             }
             try {
@@ -65,10 +60,8 @@ public class Runner implements DataModelListener{
                 Thread.sleep(100);
                 JSONDecoder(requestId);
             }catch (JSONException e){
-                System.out.println(e);
                 System.out.println(gameState);
             }catch (Exception e){
-                System.out.println(e);
                 System.out.println("Communication Error");
                 run = false;
             }

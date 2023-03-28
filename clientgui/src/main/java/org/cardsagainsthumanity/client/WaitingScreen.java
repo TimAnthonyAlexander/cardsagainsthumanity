@@ -8,9 +8,7 @@ import java.awt.event.ComponentEvent;
 public class WaitingScreen extends JPanel implements DataModelListener{
     private final Runner runner;
     private final DataModel dataModel;
-
     private final PlayerPanel playerList;
-
     private final JPanel center;
     private final ChatPanel chat;
     public WaitingScreen(Runner r, ChatPanel chat, DataModel dm){
@@ -44,16 +42,14 @@ public class WaitingScreen extends JPanel implements DataModelListener{
 
         center.add(waitingText);
         center.add(hostStart);
-        /*center.setPreferredSize(new Dimension(this.getWidth() / 5, this.getHeight() * 2/3));
-        chat.setPreferredSize(new Dimension(this.getWidth() /5, this.getHeight() * 2/3));*/
 
         this.add(center, BorderLayout.CENTER);
         this.add(chat, BorderLayout.LINE_END);
         this.add(playerList, BorderLayout.LINE_START);
     }
 
-    public void updateChat(){
-        this.chat.updateChat(dataModel.getChat());
+    public void updateChat(String [] chat){
+        this.chat.updateChat(chat);
     }
 
     public void updatePlayers(String[] players){
@@ -76,7 +72,7 @@ public class WaitingScreen extends JPanel implements DataModelListener{
 
     @Override
     public void chatChanged(String[] chat) {
-        updateChat();
+        updateChat(chat);
     }
 
     @Override

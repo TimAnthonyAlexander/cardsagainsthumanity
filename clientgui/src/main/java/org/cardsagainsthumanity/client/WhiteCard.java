@@ -8,6 +8,7 @@ public class WhiteCard extends JPanel {
     private String drawableText;
     private final int index;
 
+    private Dimension referenceSize;
     private Color color;
 
     public WhiteCard(String content, int index){
@@ -20,7 +21,7 @@ public class WhiteCard extends JPanel {
 
     public void setColor(Color c){
         color = c;
-        this.setBackground(color);
+        //this.setBackground(color);
         this.repaint();
     }
 
@@ -35,34 +36,51 @@ public class WhiteCard extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int width = ((CardArea)getParent()).getDrawWidthSingleComponent("WhiteCard");
+
+        Dimension size = this.getSize();
+
+        int width = (int) size.getWidth();
+        int height = width * 8 / 5;
+
+        size.height = height;
+
+        if(referenceSize == null){
+            referenceSize = size;
+        }
+
         int drawableTextWidth = (int)(width*0.9);
-        int height = 200;
+
+        double scalingFactor = Math.min(size.getHeight() / referenceSize.getHeight(), size.getWidth() /referenceSize.getWidth());
+        int fontSize = (int) (24*scalingFactor);
+
         int x = 0;
         int y = 0;
 
+        Font font = g.getFont();
+        g.setFont(font.deriveFont((float) fontSize));
         g.setColor(color);
         g.fillRect(x,y,width,height);
         g.setColor(Color.BLACK);
-        fillString(drawableText, g, drawableTextWidth,x+((int)(width*0.1)/2),y+15);
+        fillString(drawableText, g, drawableTextWidth,x+((int)(width*0.1)/2),y+fontSize);
     }
 
     public void fillString(String s, Graphics g, int drawableWidth, int x, int y){
-        if (g.getFontMetrics().stringWidth(s) <= drawableWidth) {
+        FontMetrics metrics = g.getFontMetrics();
+        if (metrics.stringWidth(s) <= drawableWidth) {
             g.drawString(s, x, y);
         } else {
             String[] split = s.split(" ");
             String line = "";
             int lineWidth = 0;
             for (String word : split){
-                int wordWidth = g.getFontMetrics().stringWidth(word);
+                int wordWidth = metrics.stringWidth(word);
                 if(lineWidth + wordWidth > drawableWidth){
                     g.drawString(line, x, y);
-                    y += g.getFontMetrics().getHeight();
+                    y += metrics.getHeight();
                     line = "";
                 }
                 line += word + " ";
-                lineWidth = g.getFontMetrics().stringWidth(line);
+                lineWidth = metrics.stringWidth(line);
             }
             g.drawString(line, x, y);
         }

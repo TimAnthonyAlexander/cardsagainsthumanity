@@ -4,10 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ScoreBoard extends JPanel {
-    private JLabel score;
-    private JLabel round;
-
-    private JLabel role;
+    private final JLabel score;
+    private final JLabel round;
+    private final JLabel role;
 
     public ScoreBoard(){
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

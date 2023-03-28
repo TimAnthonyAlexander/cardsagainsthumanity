@@ -6,21 +6,20 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class GUI extends JFrame{
-    private Runner runner;
-    private JPanel loginscreen;
-
-    private JButton start;
+    private final Runner runner;
+    private JPanel loginScreen;
 
     private WaitingScreen waitingScreen;
     private GameView gameArea;
 
-    private Container contentPane;
+    private final Container contentPane;
 
-    private ChatPanel chat;
-    private DataModel dataModel;
+    private final ChatPanel chat;
+    private final DataModel dataModel;
 
     public GUI(Runner prunner, DataModel dm){
         this.setPreferredSize(new Dimension(1920,1080));
+        this.setResizable(false);
         this.dataModel = dm;
         this.runner = prunner;
         this.chat = new ChatPanel(runner);
@@ -54,7 +53,7 @@ public class GUI extends JFrame{
 
     public void rebuild_area(WhiteCard[] hcs, WhiteCard[] pcs, BlackCard bc){
         gameArea.removeAll();
-        gameArea.setBackground(Color.YELLOW);
+        gameArea.setBackground(Color.GRAY);
         gameArea.setPutCards(pcs);
         gameArea.setHandCards(hcs);
         gameArea.setBlackCard(bc);
@@ -62,46 +61,42 @@ public class GUI extends JFrame{
         gameArea.setChat(chat);
     }
 
-    public GameView getGameArea(){
-        return gameArea;
-    }
-
     public void init_login(){
-        loginscreen = new JPanel();
-        loginscreen.setLayout(new GridBagLayout());
-        loginscreen.setBackground(Color.GRAY);
+        loginScreen = new JPanel();
+        loginScreen.setLayout(new GridBagLayout());
+        loginScreen.setBackground(Color.GRAY);
 
-        JPanel formfield = new JPanel();
-        formfield.setBackground(Color.WHITE);
+        JPanel formField = new JPanel();
+        formField.setBackground(Color.WHITE);
 
-        formfield.setLayout(new GridBagLayout());
+        formField.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        JTextField gamename = new JTextField();
-        JTextField gamecode = new JTextField();
+        JTextField gameName = new JTextField();
+        JTextField gameCode = new JTextField();
 
         c.weightx = 0.5;
         c.gridx = 0;
         c.gridy = 0;
-        formfield.add(new JLabel("Your Name:"), c);
+        formField.add(new JLabel("Your Name:"), c);
 
         c.weightx = 0.5;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridx = 0;
         c.gridy = 1;
-        formfield.add(gamename, c);
+        formField.add(gameName, c);
 
         c.weightx = 0.5;
         c.gridwidth = 1;
         c.gridx = 0;
         c.gridy = 2;
-        formfield.add(new JLabel("Gamecode:"), c);
+        formField.add(new JLabel("Game-code:"), c);
 
         c.weightx = 0.5;
         c.gridx = 0;
         c.gridy = 3;
-        formfield.add(gamecode, c);
+        formField.add(gameCode, c);
 
         c.weightx = 0.1;
         c.gridx = 2;
@@ -109,27 +104,28 @@ public class GUI extends JFrame{
         c.anchor = GridBagConstraints.LAST_LINE_END;
         JButton submit = new JButton("Join");
 
-        submit.addActionListener(e -> {if(gamecode.getText() == "" || gamename.getText() == ""){
-
-                }else {
-                    runner.setName(gamename.getText());
-                    runner.setConn(gamecode.getText());
-                }
+        submit.addActionListener(e -> {
+            if(gameCode.getText().equals("") || gameName.getText().equals("")){
+                System.out.println("Please input data");
+            }else {
+                runner.setName(gameName.getText());
+                runner.setConn(gameCode.getText());
+            }
         }
         );
 
-        formfield.add(submit, c);
+        formField.add(submit, c);
 
 
-        loginscreen.add(formfield);
+        loginScreen.add(formField);
     }
 
     public void setActiveScreen(String type){
-        switch(type){
+        switch (type) {
             case "login":
                 contentPane.removeAll();
-                contentPane.add(loginscreen);
-                loginscreen.setVisible(true);
+                contentPane.add(loginScreen);
+                loginScreen.setVisible(true);
                 this.getContentPane().repaint();
                 this.repaint();
                 this.getContentPane().revalidate();
@@ -154,9 +150,6 @@ public class GUI extends JFrame{
                 this.repaint();
                 this.getContentPane().revalidate();
                 this.revalidate();
-                break;
-            default:
-                System.out.println("LELEL");
                 break;
         }
     }
