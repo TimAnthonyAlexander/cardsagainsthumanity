@@ -4,10 +4,13 @@ import org.cardsagainsthumanity.client.sender.Sender;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONPointerException;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.util.UUID;
 
-public class Runner {
+public class Runner implements DataModelListener{
     private Sender sender;
     private String name, conn;
     private boolean connected;
@@ -24,6 +27,8 @@ public class Runner {
         conn = "";
         connected = false;
 
+        model.addListener(this);
+
         czar = false;
         gui = new GUI(this, model);
         gui.setActiveScreen("login");
@@ -36,20 +41,11 @@ public class Runner {
                 if(sender.getClientSocket().isConnected()){
                     connected = true;
                     sender.sendMessage("join " + name);
-                    update();
-                    JSONDecoder();
+                    UUID requestId = UUID.randomUUID();
+                    update(requestId);
+                    JSONDecoder(requestId);
                     gui.initWaitingScreen();
                     gui.setActiveScreen("waiting");
-                    waiting = true;
-                    while(waiting){
-                        update();
-                        JSONDecoder();
-                        if (gameStarted()){
-                            waiting = false;
-                            gui.init_area(model.getHandCards(), model.getPutCards(), model.getBlackCard());
-                            gui.setActiveScreen("game");
-                        }
-                    }
                 }
             }catch(IOException e){
                 System.out.println("Can't connect to host: "+ conn + " Please try again or check your connection parameters");
@@ -59,22 +55,23 @@ public class Runner {
         }
         boolean run = true;
         while(run){
-            update();
-            Thread.sleep(100);
             try {
-                JSONDecoder();
+                UUID requestId = UUID.randomUUID();
+                update(requestId);
+                if(gameState.equals("Connection lost")){
+                    System.out.println("Connection closed unexpectedly");
+                    break;
+                }
+                Thread.sleep(100);
+                JSONDecoder(requestId);
             }catch (JSONException e){
                 System.out.println(e);
                 System.out.println(gameState);
+            }catch (Exception e){
+                System.out.println(e);
+                System.out.println("Communication Error");
+                run = false;
             }
-        }
-    }
-
-    public boolean gameStarted(){
-        if(model.getRound() == 1 && model.getPreviousRound() == 0){
-            return true;
-        }else {
-            return false;
         }
     }
     public void startGame(){
@@ -82,19 +79,16 @@ public class Runner {
     }
 
     public boolean isHost(){
-        if(model.getRole().equals("host")){
-            return true;
-        }
-        return false;
+        return model.getRole().equals("host");
     }
 
     public void sendMessage(String message){
         sender.sendMessage("sendChat "+ message);
     }
 
-    public void update(){
+    public void update(UUID requestId){
         try{
-            gameState = sender.sendMessage("update");
+            gameState = sender.sendMessage("update");// "+ requestId);
         }catch (Exception e){
             System.out.println("Server Error");
             sender.closeConnection();
@@ -111,67 +105,67 @@ public class Runner {
         return sender;
     }
 
-    public boolean isTzar(){
-        return czar;
-    }
-
     public void playCard(int index){
         sender.sendMessage("putCard " + index);
     }
 
-    public void JSONDecoder(){
-        if(!(gameState.isEmpty() || gameState.equals("error") || gameState.equals(""))) {
-            JSONObject jobj = new JSONObject(gameState);
-            int score = jobj.getInt("score");
-            BlackCard bc = new BlackCard(jobj.getString("blackCard"));
-            int previousRound = model.getRound();
-            int round = jobj.getInt("round");
-            boolean czar = jobj.getBoolean("isCzar");
-            String role = jobj.getString("role");
-            JSONArray temp = jobj.getJSONArray("whiteCards");
-            WhiteCard[] wcarr = new WhiteCard[temp.length()];
-            for (int i = 0; i < wcarr.length; i++) {
-                if (!temp.isNull(i)) {
-                    wcarr[i] = new WhiteCard(temp.getString(i), i);
+    public void JSONDecoder(UUID requestId){
+        if(!(gameState == null || gameState.equals("error") || gameState.equals(""))) {
+            JSONObject jObj = new JSONObject(gameState);
+            //if (jObj.has("messageId") && jObj.getString("messageId").equals(requestId.toString())) {
+                int score = jObj.getInt("score");
+                BlackCard bc = new BlackCard(jObj.getString("blackCard"));
+                int previousRound = model.getRound();
+                int round = jObj.getInt("round");
+                boolean czar = jObj.getBoolean("isCzar");
+                String role = jObj.getString("role");
+                JSONArray temp = jObj.getJSONArray("whiteCards");
+                WhiteCard[] wcArr = new WhiteCard[temp.length()];
+                for (int i = 0; i < wcArr.length; i++) {
+                    if (!temp.isNull(i)) {
+                        wcArr[i] = new WhiteCard(temp.getString(i), i);
+                    }
                 }
-            }
-            temp = jobj.getJSONArray("putCards");
-            WhiteCard[] pcarr = new WhiteCard[temp.length()];
-            for (int i = 0; i < pcarr.length; i++) {
-                if (!temp.isNull(i)) {
-                    pcarr[i] = new WhiteCard(temp.getString(i), i);
-                } else {
-                    continue;
+                temp = jObj.getJSONArray("putCards");
+                WhiteCard[] pcarr = new WhiteCard[temp.length()];
+                for (int i = 0; i < pcarr.length; i++) {
+                    if (!temp.isNull(i)) {
+                        pcarr[i] = new WhiteCard(temp.getString(i), i);
+                    } else {
+                        continue;
+                    }
                 }
-            }
-            temp = jobj.getJSONArray("chat");
-            String[] chat = new String[temp.length()];
-            for (int i = 0; i < chat.length; i++) {
-                if (!temp.isNull(i)) {
-                    chat[i] = temp.getString(i);
-                } else {
-                    continue;
+                temp = jObj.getJSONArray("chat");
+                String[] chat = new String[temp.length()];
+                for (int i = 0; i < chat.length; i++) {
+                    if (!temp.isNull(i)) {
+                        chat[i] = temp.getString(i);
+                    } else {
+                        continue;
+                    }
                 }
-            }
-            temp = jobj.getJSONArray("playerNames");
-            String[] playerNames = new String[temp.length()];
-            for (int i = 0; i < playerNames.length; i++) {
-                if (!temp.isNull(i)) {
-                    playerNames[i] = temp.getString(i);
-                } else {
-                    continue;
+                temp = jObj.getJSONArray("playerNames");
+                String[] playerNames = new String[temp.length()];
+                for (int i = 0; i < playerNames.length; i++) {
+                    if (!temp.isNull(i)) {
+                        playerNames[i] = temp.getString(i);
+                    } else {
+                        continue;
+                    }
                 }
-            }
-            model.setScore(score);
-            model.setCzar(czar);
-            model.setRound(round);
-            model.setPreviousRound(previousRound);
-            model.setBlackCard(bc);
-            model.setHandCards(wcarr);
-            model.setPutCards(pcarr);
-            model.setRole(role);
-            model.setChat(chat);
-            model.setPlayers(playerNames);
+                model.setScore(score);
+                model.setCzar(czar);
+                model.setRound(round);
+                model.setPreviousRound(previousRound);
+                model.setBlackCard(bc);
+                model.setHandCards(wcArr);
+                model.setPutCards(pcarr);
+                model.setRole(role);
+                model.setChat(chat);
+                model.setPlayers(playerNames);
+            //}else{
+                //System.out.println("Did not receive correct UUID");
+            //}
         }else{
             System.out.println("Could not update");
         }
@@ -183,5 +177,30 @@ public class Runner {
 
     public void setConn(String s){
         this.conn = s;
+    }
+
+    @Override
+    public void dataModelChanged(DataModel dataModel) {
+
+    }
+
+    @Override
+    public void roundChanged(int round) {
+        System.out.println(round);
+        this.model.removeListener(this);
+        if(round == 1 && model.getPreviousRound() == 0){
+            gui.init_area(model.getHandCards(), model.getPutCards(), model.getBlackCard());
+            gui.setActiveScreen("game");
+        }
+    }
+
+    @Override
+    public void chatChanged(String[] chat) {
+
+    }
+
+    @Override
+    public void playersChanged(String[] players) {
+
     }
 }

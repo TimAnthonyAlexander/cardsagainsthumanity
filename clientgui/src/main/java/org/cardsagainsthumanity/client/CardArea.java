@@ -11,6 +11,10 @@ public class CardArea extends JPanel {
 
     private final Runner runner;
 
+    private int playerCount;
+
+    private boolean visible;
+
     public CardArea(Runner r){
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.runner = r;
@@ -25,6 +29,18 @@ public class CardArea extends JPanel {
     public void setBC(BlackCard bc) {
         this.removeAll();
         addBlackCard(bc);
+    }
+
+    public void setVisibility(boolean visible){
+        this.visible = visible;
+    }
+
+    private boolean getVisibility(){
+        return this.visible;
+    }
+
+    public void setPlayerCount(int playerCount){
+        this.playerCount = playerCount;
     }
 
     public int getDrawWidthSingleComponent(String type){
@@ -55,30 +71,38 @@ public class CardArea extends JPanel {
     }
 
     private void addCards(WhiteCard[] wcArr, String type){
+        CardArea ca = this;
         for(WhiteCard wc : wcArr){
-            wc.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (type.equals("putCards")) {
-                        runner.putCard(wc.getIndex());
-                        wc.setVisible(false);
-                    }else{
-                        runner.playCard(wc.getIndex());
-                        wc.setVisible(false);
+            if(type.equals("handCards") || (type.equals("putCards") && wcArr.length == playerCount)) {
+                wc.setVisibility(true);
+                wc.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (type.equals("putCards")) {
+                            runner.putCard(wc.getIndex());
+                            setVisibility(false);
+                        } else {
+                            runner.playCard(wc.getIndex());
+                            setVisibility(false);
+                        }
                     }
-                }
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    wc.setBackground(new Color(0x9A9794));
-                }
 
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    wc.setBackground(Color.WHITE);
-                }
-            });
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        wc.setColor(new Color(0x9A9794));
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        wc.setColor(Color.WHITE);
+                    }
+                });
+            }else{
+                wc.setVisibility(false);
+            }
             this.add(wc);
             this.add(Box.createRigidArea(new Dimension(10, 0)));
+            this.setVisible(getVisibility());
         }
     }
 }

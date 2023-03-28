@@ -58,6 +58,7 @@ public class GUI extends JFrame{
         gameArea.setPutCards(pcs);
         gameArea.setHandCards(hcs);
         gameArea.setBlackCard(bc);
+        gameArea.setScoreBoard();
         gameArea.setChat(chat);
     }
 

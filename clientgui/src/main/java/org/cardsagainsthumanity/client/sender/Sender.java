@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 public class Sender {
 
@@ -41,8 +42,8 @@ public class Sender {
             String resp = in.readLine();
             return resp;
         }catch(IOException e){
-            e.printStackTrace();
-            return "Critical failure in sending message";
+            //e.printStackTrace();
+            return "Connection lost";
         }
     }
 
@@ -51,12 +52,10 @@ public class Sender {
             in.close();
             out.close();
             clientSocket.close();
-            return "Closed Succesfully";
+            return "Closed Successfully";
         }catch(IOException e){
             e.printStackTrace();
             return "Critical failure in closing connection";
         }
-
     }
-
 }

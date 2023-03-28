@@ -27,7 +27,7 @@ public class DataModel {
     public void setRound(int round) {
         if(this.round != round) {
             this.round = round;
-            notifyListeners();
+            notifyRoundListeners();
         }
     }
 
@@ -134,13 +134,33 @@ public class DataModel {
         listeners.add(listener);
     }
 
+
     public void removeListener(DataModelListener listener) {
         listeners.remove(listener);
     }
 
+
     public void notifyListeners() {
         for (DataModelListener listener : listeners) {
             listener.dataModelChanged(this);
+        }
+    }
+
+    public void notifyChatListeners() {
+        for (DataModelListener listener : listeners){
+            listener.chatChanged(this.chat);
+        }
+    }
+
+    public void notifyRoundListeners() {
+        for (DataModelListener listener : listeners){
+            listener.roundChanged(this.round);
+        }
+    }
+
+    public void notifyPlayersListeners(){
+        for (DataModelListener listener : listeners){
+            listener.playersChanged(this.players);
         }
     }
 
@@ -152,11 +172,11 @@ public class DataModel {
         if(this.players != null) {
             if (players.length != this.players.length) {
                 this.players = chat;
-                notifyListeners();
+                notifyPlayersListeners();
             }
         }else{
             this.players = players;
-            notifyListeners();
+            notifyPlayersListeners();
         }
         this.players = players;
     }
@@ -169,7 +189,7 @@ public class DataModel {
         if(this.chat != null) {
             if (chat.length != this.chat.length) {
                 this.chat = chat;
-                notifyListeners();
+                notifyChatListeners();;
             }
         }else{
             this.chat = chat;

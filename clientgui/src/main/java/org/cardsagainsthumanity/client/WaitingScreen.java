@@ -2,39 +2,62 @@ package org.cardsagainsthumanity.client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class WaitingScreen extends JPanel implements DataModelListener{
-    private Runner runner;
-    private DataModel dataModel;
-    private ChatPanel chat;
+    private final Runner runner;
+    private final DataModel dataModel;
+
+    private final PlayerPanel playerList;
+
+    private final JPanel center;
+    private final ChatPanel chat;
     public WaitingScreen(Runner r, ChatPanel chat, DataModel dm){
         this.runner = r;
+        center = new JPanel();
         this.dataModel = dm;
+        playerList = new PlayerPanel(dm.getPlayers());
         this.chat = chat;
+        chat.updateChat(dm.getChat());
         this.dataModel.addListener(this);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = getWidth();
+                int height = getHeight();
+                center.setPreferredSize(new Dimension(width * 3 / 5, height * 2/3));
+                chat.setPreferredSize(new Dimension(width / 5, height * 2/3));
+                playerList.setPreferredSize(new Dimension(width / 5, height * 2 / 3));
+                revalidate();
+            }
+        });
 
         this.setLayout(new BorderLayout());
-        JPanel center = new JPanel();
 
         JLabel waitingText = new JLabel("Waiting for other Players");
         JButton hostStart = new JButton("Start Game");
         if (!runner.isHost()) {
             hostStart.setVisible(false);
         }
-        hostStart.addActionListener(e -> {
-            runner.startGame();
-        });
+        hostStart.addActionListener(e -> runner.startGame());
 
         center.add(waitingText);
         center.add(hostStart);
-        chat.setPreferredSize(new Dimension(this.getWidth() * 1/5, this.getHeight() * 2/3));
+        /*center.setPreferredSize(new Dimension(this.getWidth() / 5, this.getHeight() * 2/3));
+        chat.setPreferredSize(new Dimension(this.getWidth() /5, this.getHeight() * 2/3));*/
 
-        this.add(chat, BorderLayout.LINE_END);
         this.add(center, BorderLayout.CENTER);
+        this.add(chat, BorderLayout.LINE_END);
+        this.add(playerList, BorderLayout.LINE_START);
     }
 
-    public void updateView(DataModel d){
-        chat.updateChat(d.getChat());
+    public void updateChat(){
+        this.chat.updateChat(dataModel.getChat());
+    }
+
+    public void updatePlayers(String[] players){
+        this.playerList.updatePlayers(players);
     }
 
     public void removeListener(){
@@ -43,6 +66,21 @@ public class WaitingScreen extends JPanel implements DataModelListener{
 
     @Override
     public void dataModelChanged(DataModel dataModel) {
-        updateView(dataModel);
+
+    }
+
+    @Override
+    public void roundChanged(int round) {
+
+    }
+
+    @Override
+    public void chatChanged(String[] chat) {
+        updateChat();
+    }
+
+    @Override
+    public void playersChanged(String[] players) {
+        updatePlayers(players);
     }
 }
