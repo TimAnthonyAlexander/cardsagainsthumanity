@@ -73,7 +73,7 @@ public class CardArea extends JPanel {
     private void addCards(WhiteCard[] wcArr, String type){
         CardArea ca = this;
         for(WhiteCard wc : wcArr){
-            if(type.equals("handCards") || (type.equals("putCards") && wcArr.length == playerCount)) {
+            if(type.equals("handCards") || (type.equals("putCards") && wcArr.length == playerCount-1)) {
                 wc.setVisibility(true);
                 wc.addMouseListener(new MouseAdapter() {
                     @Override
