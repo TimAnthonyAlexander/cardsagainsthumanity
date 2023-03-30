@@ -1,6 +1,7 @@
 package org.cardsagainsthumanity.client;
 
 import javax.swing.*;
+import javax.tools.Tool;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -20,10 +21,13 @@ public class GUI extends JFrame{
     public GUI(Runner prunner, DataModel dm){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
-        int taskbarSize = scnMax.bottom;
 
-
-        this.setPreferredSize(new Dimension((int) screenSize.getWidth(),(int) screenSize.getHeight()-(int)taskbarSize));
+        this.setPreferredSize(
+                new Dimension(
+                        (int) screenSize.getWidth() - scnMax.left - scnMax.right,
+                        (int) screenSize.getHeight()- scnMax.bottom - scnMax.top
+                )
+        );
         this.setResizable(false);
         this.dataModel = dm;
         this.runner = prunner;
