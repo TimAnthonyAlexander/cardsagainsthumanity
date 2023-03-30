@@ -16,7 +16,6 @@ public class WhiteCard extends JPanel {
         this.drawableText = this.text;
         this.index = index;
         this.color = Color.WHITE;
-        this.setBackground(color);
     }
 
     public void setColor(Color c){
