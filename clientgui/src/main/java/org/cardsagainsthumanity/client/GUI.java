@@ -18,7 +18,12 @@ public class GUI extends JFrame{
     private final DataModel dataModel;
 
     public GUI(Runner prunner, DataModel dm){
-        this.setPreferredSize(new Dimension(1920,1080));
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
+        int taskbarSize = scnMax.bottom;
+
+
+        this.setPreferredSize(new Dimension((int) screenSize.getWidth(),(int) screenSize.getHeight()-(int)taskbarSize));
         this.setResizable(false);
         this.dataModel = dm;
         this.runner = prunner;

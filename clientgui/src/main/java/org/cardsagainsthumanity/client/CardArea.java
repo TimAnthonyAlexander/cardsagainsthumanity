@@ -19,6 +19,7 @@ public class CardArea extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.runner = r;
         this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        this.visible = true;
     }
     public void setWc(WhiteCard[] wc, String type){
         this.removeAll();
