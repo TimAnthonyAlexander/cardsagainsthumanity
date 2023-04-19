@@ -38,49 +38,50 @@ public class Game {
 
         switch (command) {
             case "start":
-                response = "Starting game";
+                response = "{\"Message\": \"Starting game\", id: " + data[1] + "}";
                 logic.startGame();
                 break;
             case "stop":
-                response = "Stopping game";
+                response = "{\"Message\": \"Stopping game\", id: " + data[1] + "}";
                 logic.stopGame(socket, serverSocket);
                 break;
             case "join":
-                response = "Joining as " + data[1];
-                logic.joinGame(data[1], ip);
+                response = "{\"Message\": \"Joining game as " + data[2] + ", id: " + data[1] + "}";
+                logic.joinGame(data[2], ip);
                 break;
             case "exit":
-                response = "exit_code";
+                response = "{\"Message\": \"Exiting game\", id: " + data[1] + "}";
                 break;
             case "kick":
-                response = "Kicking " + data[1];
-                logic.kickPlayer(data[1]);
+                logic.kickPlayer(data[2]);
+                response = "{\"Message\": \"Kicking player\", id: " + data[1] + "}";
                 break;
             case "update":
-                response = logic.getUpdate(ip);
+                response = logic.getUpdate(ip, data[1]);
                 break;
             case "sendChat":
-                response = "Sending chat";
-                logic.sendChat(ip, data[1]);
+                String id = data[1];
+                response = "{\"Message\": \"Sending chat\", id: " + id + "}";
+                logic.sendChat(ip, data[2]);
                 break;
             case "sendServerMessage":
-                response = "Sending server message";
-                logic.sendServerMessage(data[1]);
+                logic.sendServerMessage(data[2]);
+                response = "{\"Message\": \"Sending server message\", id: " + data[1] + "}";
                 break;
             case "putCard":
-                response = "Putting card";
-                logic.putCard(ip, Integer.parseInt(data[1]));
+                logic.putCard(ip, Integer.parseInt(data[2]));
+                response = "{\"Message\": \"Putting card\", id: " + data[1] + "}";
                 break;
             case "setCzar":
-                response = "Setting czar";
-                logic.setCzar(ip, Integer.parseInt(data[1]));
+                logic.setCzar(ip, Integer.parseInt(data[2]));
+                response = "{\"Message\": \"Setting czar\", id: " + data[1] + "}";
                 break;
             case "chooseCard":
-                response = "Choosing card as czar";
-                logic.chooseCard(ip, Integer.parseInt(data[1]));
+                logic.chooseCard(ip, Integer.parseInt(data[2]));
+                response = "{\"Message\": \"Choosing card\", id: " + data[1] + "}";
                 break;
             default:
-                response = "Invalid command: " + command;
+                response = "{\"Message\": \"Invalid command\", id: " + data[1] + "}";
                 break;
         }
 
