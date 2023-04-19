@@ -42,7 +42,7 @@ public class EchoThread extends Thread {
                 game.execute(message, socket.getInetAddress().getHostAddress(), socket, serverSocket);
                 response = game.response;
 
-                if (response.equals("exit_code")) {
+                if (response.contains("Exiting game")) {
                     System.out.println("Client disconnected on " + socket.getInetAddress().getHostAddress());
                     game.logic.sendServerMessage("Client disconnected on " + socket.getInetAddress().getHostAddress());
                     socket.close();

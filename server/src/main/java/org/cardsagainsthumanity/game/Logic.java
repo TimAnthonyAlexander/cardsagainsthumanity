@@ -76,7 +76,7 @@ public class Logic {
         return null;
     }
 
-    public String getUpdate(final String clientip) throws UnknownHostException {
+    public String getUpdate(final String clientip, String messageId) throws UnknownHostException {
         // Loop through all players and if the ip is the same as the client ip, set
         // player to that player
         Player player = null;
@@ -109,6 +109,7 @@ public class Logic {
         json.put("role", role);
         json.put("blackCard", blackCard.content);
         json.put("isCzar", player.isCzar);
+        json.put("id", messageId);
         final ArrayList<String> playerNames = new ArrayList<String>();
         final ArrayList<String> whiteCards = new ArrayList<String>();
         for (int i = 0; i < players.size(); i++) {
@@ -220,7 +221,7 @@ public class Logic {
             }
             putCards.clear();
             round++;
-            if (round == 10) {
+            if (round > 10) {
                 round = 0;
                 // Calculate winner
                 int winner = 0;
