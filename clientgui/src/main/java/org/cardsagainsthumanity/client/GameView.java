@@ -36,13 +36,17 @@ public class GameView extends JPanel implements DataModelListener {
         });
     }
 
-    public void checkVisibility(){
+    public void checkVisibility(int playerCount){
         if (czar){
-            this.handCards.setVisible(false);
+            this.handCards.setVisible(true);
             this.putCards.setVisible(true);
         }else{
             this.handCards.setVisible(this.handCards.getVisibility());
-            this.putCards.setVisible(false);
+            if(this.putCards.getCardLength() == playerCount-1){
+                this.putCards.setVisible(true);
+            }else {
+                this.putCards.setVisible(false);
+            }
         }
     }
 
@@ -90,12 +94,14 @@ public class GameView extends JPanel implements DataModelListener {
     public void updateView(DataModel model){
         this.blackCard.setPlayerCount(model.getPlayers().length);
         this.blackCard.setBC(model.getBlackCard());
+        this.putCards.setCzar(model.isCzar());
         this.putCards.setPlayerCount(model.getPlayers().length);
         this.putCards.setWc(model.getPutCards(),"putCards");
+        this.handCards.setCzar(model.isCzar());
         this.handCards.setPlayerCount(model.getPlayers().length);
         this.handCards.setWc(model.getHandCards(), "handCards");
         this.czar = model.isCzar();
-        checkVisibility();
+        checkVisibility(model.getPlayers().length);
         System.out.println("Updated View");
         revalidate();
         repaint();
