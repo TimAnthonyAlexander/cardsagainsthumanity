@@ -222,6 +222,7 @@ public class Logic {
                 }
             }
             putCards.clear();
+            putPlayers.clear();
             round++;
             if (round > ROUNDS) {
                 round = 0;
@@ -416,10 +417,18 @@ public class Logic {
             }
         }
 
-        // Now return a random line from the file
+        // Some cards contain "RP", which is to be replaced with a random player name
+        // Take a random player and make him .isCzar=true
         final Random rand = new Random();
+        // Now return a random line from the file
         final int randomNum = rand.nextInt(lines.size());
-        final String line = lines.get(randomNum);
+        String line = lines.get(randomNum);
+        if (players.size() > 0) {
+            final int randomNumPl = rand.nextInt(Math.max(1, players.size()));
+            final String randomPlayerName = players.get(randomNumPl).name;
+            line = line.replace("RP", randomPlayerName);
+        }
+
         return new BlackCard(line);
     }
 }
