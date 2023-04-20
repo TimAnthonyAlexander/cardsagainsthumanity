@@ -30,7 +30,7 @@ public class Player {
         return isHost() ? "host" : "player";
     }
 
-    private WhiteCard whiteCard() {
+    public WhiteCard whiteCard() {
         InputStream is = Logic.class.getClassLoader().getResourceAsStream("white.csv");
         assert is != null;
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
