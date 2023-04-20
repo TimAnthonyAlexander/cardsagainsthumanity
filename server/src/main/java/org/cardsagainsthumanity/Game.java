@@ -70,7 +70,11 @@ public class Game {
                 logic.sendChat(ip, chat);
                 break;
             case "sendServerMessage":
-                logic.sendServerMessage(data[2]);
+                String message = "";
+                for (int i = 2; i < data.length; i++) {
+                    message += data[i] + " ";
+                }
+                logic.sendServerMessage(message);
                 response = "{\"Message\": \"Sending server message\", id: \"" + data[1] + "\"}";
                 break;
             case "putCard":
@@ -86,7 +90,7 @@ public class Game {
                 response = "{\"Message\": \"Choosing card\", id: \"" + data[1] + "\"}";
                 break;
             default:
-                response = "{\"Message\": \"Invalid command\", id: \"" + data[1] + "\"}";
+                response = "{\"Message\": \"Invalid command\", id: \"invalid\"}";
                 break;
         }
 
