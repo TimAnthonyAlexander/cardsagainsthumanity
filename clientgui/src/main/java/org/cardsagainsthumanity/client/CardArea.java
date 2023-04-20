@@ -13,6 +13,8 @@ public class CardArea extends JPanel {
 
     private int playerCount;
 
+    private boolean isCzar;
+
     private boolean visible;
 
     public CardArea(Runner r){
@@ -50,15 +52,16 @@ public class CardArea extends JPanel {
 
     private void addCards(WhiteCard[] wcArr, String type){
         for(WhiteCard wc : wcArr){
+            this.wcArr = wcArr;
             if(type.equals("handCards") || (type.equals("putCards") && wcArr.length == playerCount-1)) {
                 wc.setVisibility(true);
                 wc.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
-                        if (type.equals("putCards")) {
+                        if (type.equals("putCards") && isCzar) {
                             runner.putCard(wc.getIndex());
                             setVisibility(false);
-                        } else {
+                        } else if (type.equals("handCards") && !isCzar) {
                             runner.playCard(wc.getIndex());
                             setVisibility(false);
                         }
@@ -80,5 +83,13 @@ public class CardArea extends JPanel {
             this.add(wc);
             this.add(Box.createRigidArea(new Dimension(10, 0)));
         }
+    }
+
+    public int getCardLength() {
+        return wcArr.length;
+    }
+
+    public void setCzar(boolean czar) {
+        isCzar = czar;
     }
 }
