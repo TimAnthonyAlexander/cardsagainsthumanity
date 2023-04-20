@@ -247,6 +247,13 @@ public class Logic {
                     }
                 }
                 startGame();
+                for (int i = 0; i < players.size(); i++) {
+                    if (players.get(i) != null) {
+                        for (int j = 0; j < 10; j++) {
+                            players.get(i).whitecards.add(players.get(i).whiteCard());
+                        }
+                    }
+                }
                 return;
             }
 
