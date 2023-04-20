@@ -23,7 +23,7 @@ public class Game {
             command = message;
             split = new String[0];
         } else {
-            split = message.split(" ", 2);
+            split = message.split(" ", 4);
             command = split[0];
         }
 
@@ -38,50 +38,55 @@ public class Game {
 
         switch (command) {
             case "start":
-                response = "{\"Message\": \"Starting game\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Starting game\", id: \"" + data[1] + "\"}";
                 logic.startGame();
                 break;
             case "stop":
-                response = "{\"Message\": \"Stopping game\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Stopping game\", id: \"" + data[1] + "\"}";
                 logic.stopGame(socket, serverSocket);
                 break;
             case "join":
-                response = "{\"Message\": \"Joining game as " + data[2] + ", id: " + data[1] + "}";
+                response = "{\"Message\": \"Joining game as " + data[2] + "\", id: \"" + data[1] + "\"}";
                 logic.joinGame(data[2], ip);
                 break;
             case "exit":
-                response = "{\"Message\": \"Exiting game\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Exiting game\", id: \"EXIT\"}";
                 break;
             case "kick":
                 logic.kickPlayer(data[2]);
-                response = "{\"Message\": \"Kicking player\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Kicking player\", id: \"" + data[1] + "\"}";
                 break;
             case "update":
                 response = logic.getUpdate(ip, data[1]);
                 break;
             case "sendChat":
                 String id = data[1];
-                response = "{\"Message\": \"Sending chat\", id: " + id + "}";
-                logic.sendChat(ip, data[2]);
+                // Everything after data 1
+                String chat = "";
+                for (int i = 2; i < data.length; i++) {
+                    chat += data[i] + " ";
+                }
+                response = "{\"Message\": \"Sending chat\", id: \"" + id + "\"}";
+                logic.sendChat(ip, chat);
                 break;
             case "sendServerMessage":
                 logic.sendServerMessage(data[2]);
-                response = "{\"Message\": \"Sending server message\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Sending server message\", id: \"" + data[1] + "\"}";
                 break;
             case "putCard":
                 logic.putCard(ip, Integer.parseInt(data[2]));
-                response = "{\"Message\": \"Putting card\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Putting card\", id: \"" + data[1] + "\"}";
                 break;
             case "setCzar":
                 logic.setCzar(ip, Integer.parseInt(data[2]));
-                response = "{\"Message\": \"Setting czar\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Setting czar\", id: \"" + data[1] + "\"}";
                 break;
             case "chooseCard":
                 logic.chooseCard(ip, Integer.parseInt(data[2]));
-                response = "{\"Message\": \"Choosing card\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Choosing card\", id: \"" + data[1] + "\"}";
                 break;
             default:
-                response = "{\"Message\": \"Invalid command\", id: " + data[1] + "}";
+                response = "{\"Message\": \"Invalid command\", id: \"" + data[1] + "\"}";
                 break;
         }
 
