@@ -4,49 +4,82 @@ import javax.swing.*;
 import java.awt.*;
 
 public class WhiteCard extends JPanel {
-    private String text;
-    private int index;
+    private final String text;
+    private String drawableText;
+    private final int index;
+
+    private Dimension referenceSize;
+    private Color color;
 
     public WhiteCard(String content, int index){
         this.text = content;
+        this.drawableText = this.text;
         this.index = index;
-        this.setBackground(Color.WHITE);
+        this.color = Color.WHITE;
     }
 
-    public String getText() {
-        return text;
+    public void setColor(Color c){
+        color = c;
+        //this.setBackground(color);
+        this.repaint();
     }
+
+    public void setVisibility(boolean visible){
+        if(visible){
+            drawableText = text;
+        }else{
+            drawableText = "";
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int width = ((CardArea)getParent()).getDrawWidthSingleComponent("WhiteCard");
+
+        Dimension size = this.getSize();
+
+        int width = (int) size.getWidth();
+        int height = width * 8 / 5;
+
+        size.height = height;
+
+        if(referenceSize == null){
+            referenceSize = size;
+        }
+
         int drawableTextWidth = (int)(width*0.9);
-        int height = 200;
+
+        double scalingFactor = Math.min(size.getHeight() / referenceSize.getHeight(), size.getWidth() /referenceSize.getWidth());
+        int fontSize = (int) (24*scalingFactor);
+
         int x = 0;
         int y = 0;
 
-        g.setColor(Color.WHITE);
+        Font font = g.getFont();
+        g.setFont(font.deriveFont((float) fontSize));
+        g.setColor(color);
         g.fillRect(x,y,width,height);
         g.setColor(Color.BLACK);
-        fillString(text, g, drawableTextWidth,x+((int)(width*0.1)/2),y+15);
+        fillString(drawableText, g, drawableTextWidth,x+((int)(width*0.1)/2),y+fontSize);
     }
 
     public void fillString(String s, Graphics g, int drawableWidth, int x, int y){
-        if (g.getFontMetrics().stringWidth(s) <= drawableWidth) {
+        FontMetrics metrics = g.getFontMetrics();
+        if (metrics.stringWidth(s) <= drawableWidth) {
             g.drawString(s, x, y);
         } else {
-            String[] splitted = s.split(" ");
+            String[] split = s.split(" ");
             String line = "";
             int lineWidth = 0;
-            for (String word : splitted){
-                int wordWidth = g.getFontMetrics().stringWidth(word);
+            for (String word : split){
+                int wordWidth = metrics.stringWidth(word);
                 if(lineWidth + wordWidth > drawableWidth){
                     g.drawString(line, x, y);
-                    y += g.getFontMetrics().getHeight();
+                    y += metrics.getHeight();
                     line = "";
                 }
                 line += word + " ";
-                lineWidth = g.getFontMetrics().stringWidth(line);
+                lineWidth = metrics.stringWidth(line);
             }
             g.drawString(line, x, y);
         }
@@ -54,9 +87,5 @@ public class WhiteCard extends JPanel {
 
     public int getIndex(){
         return this.index;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 }

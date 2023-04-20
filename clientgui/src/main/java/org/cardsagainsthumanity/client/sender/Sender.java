@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.InetAddress;
+import java.util.UUID;
 
 public class Sender {
 
-    private PrintWriter out;
-    private BufferedReader in;
-    private Socket clientSocket;
+    private final PrintWriter out;
+    private final BufferedReader in;
+    private final Socket clientSocket;
 
     public Sender(String code) throws IOException{
         String host = code;
@@ -22,7 +22,7 @@ public class Sender {
             try {
                 port = Integer.parseInt(codArr[1]);
             }catch(Exception e){
-                System.out.println(e);
+                System.out.println("Please input a valid port");
             }
         }
 
@@ -35,28 +35,40 @@ public class Sender {
         return clientSocket;
     }
 
-    public String sendMessage(String msg){
+    public String[] sendMessage(String command, String txt){
         try{
+            UUID requestId = UUID.randomUUID();
+            String msg = "";
+            msg = command + " " + requestId + " " + txt;
             out.println(msg);
-            String resp = in.readLine();
-            return resp;
+            return new String[]{requestId.toString(), in.readLine()};
         }catch(IOException e){
-            e.printStackTrace();
-            return "Critical failure in sending message";
+            System.out.println("Connection lost");
+            return new String[]{"Connection lost"};
         }
     }
 
-    public String closeConnection(){
+    public String[] sendMessage(String command){
+        try{
+            UUID requestId = UUID.randomUUID();
+            String msg = "";
+            msg = command + " " + requestId;
+            out.println(msg);
+            return new String[]{requestId.toString(), in.readLine()};
+        }catch(IOException e){
+            System.out.println("Connection lost");
+            return new String[]{"Connection lost"};
+        }
+    }
+
+    public void closeConnection(){
         try{
             in.close();
             out.close();
             clientSocket.close();
-            return "Closed Succesfully";
+            System.out.println("Closed Successfully");
         }catch(IOException e){
-            e.printStackTrace();
-            return "Critical failure in closing connection";
+            System.out.println("Critical failure in closing connection");
         }
-
     }
-
 }
