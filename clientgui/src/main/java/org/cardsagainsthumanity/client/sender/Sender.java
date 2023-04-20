@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.UUID;
 
 public class Sender {
 
@@ -34,12 +35,29 @@ public class Sender {
         return clientSocket;
     }
 
-    public String sendMessage(String msg){
+    public String[] sendMessage(String command, String txt){
         try{
+            UUID requestId = UUID.randomUUID();
+            String msg = "";
+            msg = command + " " + requestId + " " + txt;
             out.println(msg);
-            return in.readLine();
+            return new String[]{requestId.toString(), in.readLine()};
         }catch(IOException e){
-            return "Connection lost";
+            System.out.println("Connection lost");
+            return new String[]{"Connection lost"};
+        }
+    }
+
+    public String[] sendMessage(String command){
+        try{
+            UUID requestId = UUID.randomUUID();
+            String msg = "";
+            msg = command + " " + requestId;
+            out.println(msg);
+            return new String[]{requestId.toString(), in.readLine()};
+        }catch(IOException e){
+            System.out.println("Connection lost");
+            return new String[]{"Connection lost"};
         }
     }
 

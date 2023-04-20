@@ -13,7 +13,7 @@ public class Runner implements DataModelListener{
     private String name, conn;
 
     private final GUI gui;
-    private String gameState;
+    private String[] gameState;
 
     private final DataModel model;
 
@@ -35,10 +35,9 @@ public class Runner implements DataModelListener{
                 sender = new Sender(conn);
                 if(sender.getClientSocket().isConnected()){
                     connected = true;
-                    sender.sendMessage("join " + name);
-                    UUID requestId = UUID.randomUUID();
-                    update(requestId);
-                    JSONDecoder(requestId);
+                    sender.sendMessage("join", name);
+                    update();
+                    JSONDecoder();
                     gui.initWaitingScreen();
                     gui.setActiveScreen("waiting");
                 }
@@ -51,16 +50,15 @@ public class Runner implements DataModelListener{
         boolean run = true;
         while(run){
             try {
-                UUID requestId = UUID.randomUUID();
-                update(requestId);
-                if(gameState.equals("Connection lost")){
+                update();
+                if(gameState[0].equals("Connection lost")){
                     System.out.println("Connection closed unexpectedly");
                     break;
                 }
                 Thread.sleep(100);
-                JSONDecoder(requestId);
+                JSONDecoder();
             }catch (JSONException e){
-                System.out.println(gameState);
+                System.out.println(gameState[1]);
             }catch (Exception e){
                 System.out.println("Communication Error");
                 run = false;
@@ -76,12 +74,12 @@ public class Runner implements DataModelListener{
     }
 
     public void sendMessage(String message){
-        sender.sendMessage("sendChat "+ message);
+        sender.sendMessage("sendChat", message);
     }
 
-    public void update(UUID requestId){
+    public void update(){
         try{
-            gameState = sender.sendMessage("update");// "+ requestId);
+            gameState = sender.sendMessage("update");
         }catch (Exception e){
             System.out.println("Server Error");
             sender.closeConnection();
@@ -90,7 +88,7 @@ public class Runner implements DataModelListener{
 
     public void putCard(int index){
         if(model.getPlayers().length-1 == model.getPutCards().length) {
-            sender.sendMessage("chooseCard " + index);
+            sender.sendMessage("chooseCard", ""+index);
         }
     }
 
@@ -99,13 +97,13 @@ public class Runner implements DataModelListener{
     }
 
     public void playCard(int index){
-        sender.sendMessage("putCard " + index);
+        sender.sendMessage("putCard", ""+index);
     }
 
-    public void JSONDecoder(UUID requestId){
-        if(!(gameState == null || gameState.equals("error") || gameState.equals(""))) {
-            JSONObject jObj = new JSONObject(gameState);
-            //if (jObj.has("messageId") && jObj.getString("messageId").equals(requestId.toString())) {
+    public String JSONDecoder(){
+        if(!(gameState[1] == null || gameState[1].equals("error") || gameState[1].equals(""))) {
+            JSONObject jObj = new JSONObject(gameState[1]);
+            if (jObj.has("id") && jObj.getString("id").equals(gameState[0])) {
                 int score = jObj.getInt("score");
                 BlackCard bc = new BlackCard(jObj.getString("blackCard"));
                 int previousRound = model.getRound();
@@ -156,11 +154,16 @@ public class Runner implements DataModelListener{
                 model.setRole(role);
                 model.setChat(chat);
                 model.setPlayers(playerNames);
-            //}else{
-                //System.out.println("Did not receive correct UUID");
-            //}
+                return "OK";
+            }else{
+                System.out.println("Did not receive correct UUID");
+                System.out.println(gameState[0]);
+                System.out.println(gameState[1]);
+                return "error";
+            }
         }else{
             System.out.println("Could not update");
+            return "error";
         }
     }
 
