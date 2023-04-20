@@ -3,13 +3,14 @@ package org.cardsagainsthumanity.game;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import org.json.JSONObject;
-import java.io.InputStreamReader;
 import java.util.Random;
+
+import org.json.JSONObject;
 
 /**
  * 
@@ -24,6 +25,7 @@ public class Logic {
     public ArrayList<WhiteCard> putCards = new ArrayList<WhiteCard>();
     public int updatePull = 0;
     public ArrayList<String> chat = new ArrayList<String>();
+
     public Player winner = null;
 
     public Logic() {
@@ -37,8 +39,8 @@ public class Logic {
         blackCard = this.blackCard();
 
         // Take a random player and make him .isCzar=true
-        Random rand = new Random();
-        int randomNum = rand.nextInt(players.size());
+        final Random rand = new Random();
+        final int randomNum = rand.nextInt(players.size());
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i) != null) {
                 players.get(i).isCzar = false;
@@ -49,7 +51,7 @@ public class Logic {
         sendServerMessage("Player " + players.get(randomNum).name + " is the czar");
     }
 
-    public void stopGame(Socket socket, ServerSocket serverSocket) throws IOException {
+    public void stopGame(final Socket socket, final ServerSocket serverSocket) throws IOException {
         sendServerMessage("Game stopped");
         System.out.println("Game stopped");
         socket.close();
@@ -60,7 +62,7 @@ public class Logic {
         if (round != 0) {
             return;
         }
-        Player player = new Player(playerName);
+        final Player player = new Player(playerName);
         player.ip = ip;
         players.add(player);
         System.out.println("Player " + playerName + " joined the game");
@@ -76,7 +78,7 @@ public class Logic {
         return null;
     }
 
-    public String getUpdate(final String clientip, String messageId) throws UnknownHostException {
+    public String getUpdate(final String clientip, final String messageId) throws UnknownHostException {
         // Loop through all players and if the ip is the same as the client ip, set
         // player to that player
         Player player = null;
@@ -221,7 +223,7 @@ public class Logic {
             }
             putCards.clear();
             round++;
-            if (round > 10) {
+            if (round > ROUNDS) {
                 round = 0;
                 // Calculate winner
                 int winner = 0;
@@ -299,7 +301,7 @@ public class Logic {
         chat.add("Server: " + message);
     }
 
-    public void setCzar(final String ip, int playerId) throws UnknownHostException {
+    public void setCzar(final String ip, final int playerId) throws UnknownHostException {
         Player player = null;
         // Set all players to not czar
         for (int i = 0; i < players.size(); i++) {
@@ -317,32 +319,100 @@ public class Logic {
         player.isCzar = true;
     }
 
+    public void setPlayers(final ArrayList<Player> players) {
+        this.players = players;
+    }
+
+    public void setBlackCard(final BlackCard blackCard) {
+        this.blackCard = blackCard;
+    }
+
+    public void setPutPlayers(final ArrayList<Player> putPlayers) {
+        this.putPlayers = putPlayers;
+    }
+
+    public void setRound(final Integer round) {
+        this.round = round;
+    }
+
+    public void setPutCards(final ArrayList<WhiteCard> putCards) {
+        this.putCards = putCards;
+    }
+
+    public void setUpdatePull(final int updatePull) {
+        this.updatePull = updatePull;
+    }
+
+    public void setChat(final ArrayList<String> chat) {
+        this.chat = chat;
+    }
+
+    public void setWinner(final Player winner) {
+        this.winner = winner;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public BlackCard getBlackCard() {
+        return blackCard;
+    }
+
+    public ArrayList<Player> getPutPlayers() {
+        return putPlayers;
+    }
+
+    public Integer getRound() {
+        return round;
+    }
+
+    public ArrayList<WhiteCard> getPutCards() {
+        return putCards;
+    }
+
+    public int getUpdatePull() {
+        return updatePull;
+    }
+
+    public ArrayList<String> getChat() {
+        return chat;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public static int getRounds() {
+        return ROUNDS;
+    }
+
     private BlackCard blackCard() {
         // column called text, take a random row
         // from the file and return it as a BlackCard object.
-        InputStream is = Logic.class.getClassLoader().getResourceAsStream("black.csv");
+        final InputStream is = Logic.class.getClassLoader().getResourceAsStream("black.csv");
         assert is != null;
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        ArrayList<String> lines = new ArrayList<String>();
+        final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        final ArrayList<String> lines = new ArrayList<String>();
         try {
             String line;
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 br.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
 
         // Now return a random line from the file
-        Random rand = new Random();
-        int randomNum = rand.nextInt(lines.size());
-        String line = lines.get(randomNum);
+        final Random rand = new Random();
+        final int randomNum = rand.nextInt(lines.size());
+        final String line = lines.get(randomNum);
         return new BlackCard(line);
     }
 }

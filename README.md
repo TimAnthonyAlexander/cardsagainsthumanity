@@ -29,3 +29,9 @@ Sobald alle Spieler ihre Karte abgegeben haben, werden sie nacheinander aufgedec
 
 
 Erste Schritt: Ping zwischen Client und Host.
+
+#### Statistik
+
+- Gewinner
+- Punkte
+- Wins
