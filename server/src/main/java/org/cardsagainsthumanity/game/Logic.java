@@ -16,7 +16,7 @@ import org.json.JSONObject;
  * 
  */
 public class Logic {
-    private static final int ROUNDS = 10;
+    private int ROUNDS = 10;
 
     public ArrayList<Player> players = new ArrayList<Player>();
     public BlackCard blackCard = this.blackCard();
@@ -34,11 +34,11 @@ public class Logic {
     /**
      *
      */
-    public void startGame() {
+    public void startGame(int rounds) {
         round = 1;
+        this.ROUNDS = rounds;
         blackCard = this.blackCard();
 
-        // Take a random player and make him .isCzar=true
         final Random rand = new Random();
         final int randomNum = rand.nextInt(players.size());
         for (int i = 0; i < players.size(); i++) {
@@ -246,9 +246,7 @@ public class Logic {
                         players.get(i).isCzar = false;
                     }
                 }
-                startGame();
-<<<<<<< HEAD
-=======
+                startGame(ROUNDS);
                 for (int i = 0; i < players.size(); i++) {
                     if (players.get(i) != null) {
                         for (int j = 0; j < 10; j++) {
@@ -256,7 +254,6 @@ public class Logic {
                         }
                     }
                 }
->>>>>>> origin/tim
                 return;
             }
 
@@ -393,7 +390,7 @@ public class Logic {
         return winner;
     }
 
-    public static int getRounds() {
+    public int getRounds() {
         return ROUNDS;
     }
 

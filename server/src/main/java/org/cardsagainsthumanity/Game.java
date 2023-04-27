@@ -34,12 +34,19 @@ public class Game {
             throws UnknownHostException, IOException {
         String response;
 
-        // Ip of the connecting client
-
         switch (command) {
             case "start":
                 response = "{\"Message\": \"Starting game\", id: \"" + data[1] + "\"}";
-                logic.startGame();
+                // data[2] is the round count
+                // Check if data[2] is present, if not, set it to 10
+                int roundCount;
+                if (data.length < 3) {
+                    roundCount = 10;
+                } else {
+                    roundCount = Integer.parseInt(data[2]);
+                }
+                System.out.println("Starting game with " + roundCount + " rounds");
+                logic.startGame(roundCount);
                 break;
             case "stop":
                 response = "{\"Message\": \"Stopping game\", id: \"" + data[1] + "\"}";
@@ -70,15 +77,11 @@ public class Game {
                 logic.sendChat(ip, chat);
                 break;
             case "sendServerMessage":
-<<<<<<< HEAD
-                logic.sendServerMessage(data[2]);
-=======
                 String message = "";
                 for (int i = 2; i < data.length; i++) {
                     message += data[i] + " ";
                 }
                 logic.sendServerMessage(message);
->>>>>>> origin/tim
                 response = "{\"Message\": \"Sending server message\", id: \"" + data[1] + "\"}";
                 break;
             case "putCard":
@@ -94,11 +97,7 @@ public class Game {
                 response = "{\"Message\": \"Choosing card\", id: \"" + data[1] + "\"}";
                 break;
             default:
-<<<<<<< HEAD
-                response = "{\"Message\": \"Invalid command\", id: \"" + data[1] + "\"}";
-=======
                 response = "{\"Message\": \"Invalid command\", id: \"invalid\"}";
->>>>>>> origin/tim
                 break;
         }
 
