@@ -459,7 +459,7 @@ public class Logic {
         // Replace "RP" with a random player name
         if (players.size() > 0) {
             final int randomPlayer = rand.nextInt(players.size());
-            final String line = lines.get(randomNum).replace("RP", players.get(randomPlayer).name);
+            final String line = lines.get(randomNum).replace("RP ", players.get(randomPlayer).name + " ");
             return new BlackCard(line);
         }
 
