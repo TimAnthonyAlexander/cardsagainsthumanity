@@ -7,6 +7,12 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -254,6 +260,30 @@ public class Logic {
                         }
                     }
                 }
+                try {
+                    Class.forName("org.sqlite.JDBC");
+                    Connection conn = DriverManager.getConnection("jdbc:sqlite:winner.db");
+                    Statement stat = conn.createStatement();
+                    stat.executeUpdate("create table if not exists winner (name, score);");
+                    PreparedStatement prep = conn.prepareStatement("insert into winner values (?, ?);");
+                    prep.setString(1, players.get(winner).name);
+                    prep.setInt(2, players.get(winner).score);
+                    prep.addBatch();
+                    conn.setAutoCommit(false);
+                    prep.executeBatch();
+                    conn.setAutoCommit(true);
+                    ResultSet rs = stat.executeQuery("select * from winner;");
+                    while (rs.next()) {
+                        System.out.println("name = " + rs.getString("name"));
+                        System.out.println("score = " + rs.getInt("score"));
+                    }
+                    rs.close();
+                    conn.close();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
 
@@ -283,6 +313,7 @@ public class Logic {
             putPlayers.clear();
             sendServerMessage("Player " + players.get(newCzar).name + " is now czar");
             System.out.println("Player " + players.get(newCzar).name + " is now czar");
+            // Write into local sqlite file the winner, the table is called "winner"
         }
     }
 
