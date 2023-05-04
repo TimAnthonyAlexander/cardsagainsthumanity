@@ -239,6 +239,33 @@ public class Logic {
                         winner = i;
                     }
                 }
+                try {
+                    Class.forName("org.sqlite.JDBC");
+                    Connection conn = DriverManager.getConnection("jdbc:sqlite:winner.db");
+                    Statement stat = conn.createStatement();
+                    stat.executeUpdate("create table if not exists winner (name, score);");
+                    PreparedStatement prep = conn.prepareStatement("insert into winner values (?, ?);");
+                    prep.setString(1, players.get(winner).name);
+                    prep.setInt(2, players.get(winner).score);
+                    prep.addBatch();
+                    conn.setAutoCommit(false);
+                    prep.executeBatch();
+                    conn.setAutoCommit(true);
+                    ResultSet rs = stat.executeQuery("select * from winner;");
+                    while (rs.next()) {
+                        System.out.println("name = " + rs.getString("name"));
+                        System.out.println("score = " + rs.getInt("score"));
+                    }
+                    rs.close();
+                    conn.close();
+                    // Send server message score
+                    sendServerMessage("Player " + players.get(winner).name + " won the game with "
+                            + players.get(winner).score + " points!");
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 chat.add("Player " + players.get(winner).name + " won the game!");
                 for (int i = 0; i < players.size(); i++) {
                     if (players.get(i) != null) {
@@ -260,30 +287,6 @@ public class Logic {
                             players.get(i).whitecards.add(players.get(i).whiteCard());
                         }
                     }
-                }
-                try {
-                    Class.forName("org.sqlite.JDBC");
-                    Connection conn = DriverManager.getConnection("jdbc:sqlite:winner.db");
-                    Statement stat = conn.createStatement();
-                    stat.executeUpdate("create table if not exists winner (name, score);");
-                    PreparedStatement prep = conn.prepareStatement("insert into winner values (?, ?);");
-                    prep.setString(1, players.get(winner).name);
-                    prep.setInt(2, players.get(winner).score);
-                    prep.addBatch();
-                    conn.setAutoCommit(false);
-                    prep.executeBatch();
-                    conn.setAutoCommit(true);
-                    ResultSet rs = stat.executeQuery("select * from winner;");
-                    while (rs.next()) {
-                        System.out.println("name = " + rs.getString("name"));
-                        System.out.println("score = " + rs.getInt("score"));
-                    }
-                    rs.close();
-                    conn.close();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
                 return;
             }
@@ -451,7 +454,13 @@ public class Logic {
         // Now return a random line from the file
         final Random rand = new Random();
         final int randomNum = rand.nextInt(lines.size());
-        final String line = lines.get(randomNum);
+
+        // Replace "RP" with a random player name
+        final int randomPlayer = rand.nextInt(players.size());
+        final String playerName = players.get(randomPlayer).name;
+
+        final String line = lines.get(randomNum).replace("RP", playerName);
+
         return new BlackCard(line);
     }
 }
