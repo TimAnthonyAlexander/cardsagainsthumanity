@@ -1,37 +1,44 @@
-# Project
+# Project: Cards Against Humanity
 
-Tim, Sandy, Matthias, Morten, Linus
+## Team Members
 
-## Thema: Cards against Humanity
+- **Game Server Developer**: Tim
+- **Scrum Master**: Sandy
+- **GUI & Client Developer**: Matthias
+- **Card Assistant to the Manager**: Linus
+- **Additional Team Member**: Morten
 
-### Regeln
+## Rules
 
-Jeder Spieler bekommt zehn weiße Karten.
-Ein zufälliger Spieler beginnt als Zar. Dieser liest die erste schwarze Karte laut vor, mit Lücken.
-Alle anderen Spieler wählen aus ihren zehn weißen Karten ihren Favoriten. 
-Sobald alle Spieler ihre Karte abgegeben haben, werden sie nacheinander aufgedeckt und in ihrer Kombination mit der schwarzen Karte vorgelesen. Die, die der Zar am witzigsten findet, kann er auswählen, der Spieler hinter dieser Karte erhält einen Punkt. Nächste Runde beginnt mit dem nächsten Spieler als Zar in der Reihe.
+1. **Starting the Game**: Each player receives ten white cards.
+2. **Choosing the Zar**: A random player starts as the Zar and reads the first black card aloud, with blanks.
+3. **Selecting White Cards**: All other players choose their favorite white card from their hand.
+4. **Revealing Choices**: Once all players have submitted their cards, they are revealed and read in combination with the black card.
+5. **Scoring**: The Zar chooses the funniest combination, and the player behind that card receives a point. The next round begins with the next player as Zar.
 
-### Aufteilung
+## Project Roles
 
-- Game Server: Tim
-- Scrum Master: Sandy
-- GUI & Client: Matthias
-- Card Assistant to the Manager: Linus
+- **Game Server**: Tim
+- **Scrum Master**: Sandy
+- **GUI & Client**: Matthias
+- **Card Assistant to the Manager**: Linus
 
-### Technische Herangehensweise:
+## Technical Approach
 
-- Kanban: Trello, Sandy erstellt die Tasks
-- VCS: Git via Github, ein Repo mit client/ und server/
-    - Tim Branch
-    - Matthias Branch
-    - Master Branch
-- Client-Host-Communication: Port 8761 via custom protocol -> plain data
+### Workflow
 
+- **Kanban Board**: Managed on Trello, with Sandy creating tasks.
+- **Version Control System (VCS)**: Git via Github, with a repository containing both `client/` and `server/` directories.
+  - Tim Branch
+  - Matthias Branch
+  - Master Branch
 
-Erste Schritt: Ping zwischen Client und Host.
+### Communication
 
-#### Statistik
+- **Client-Host Communication**: Port 8761 via custom protocol -> plain data.
 
-- Gewinner
-- Punkte
-- Wins
+## Statistics
+
+- **Winners**
+- **Points**
+- **Wins**
